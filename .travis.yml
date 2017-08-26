@@ -1,9 +1,14 @@
 language: java
 sudo: false
 dist: trusty
+jdk:
+  - openjdk8
+  - oraclejdk8
 os:
   - linux
-  - macos
+cache:
+  directories:
+  - .m2
 script:
   - cd webinterface/
   - mvn test
