@@ -1,2 +1,8 @@
 # ignore target directory
 target/
+
+# ignore binary stuff
+bin/
+
+# generated class files
+*.class
