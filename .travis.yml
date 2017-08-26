@@ -1,0 +1,11 @@
+language: java
+sudo: false
+dist: trusty
+os:
+  - linux
+  - macos
+script:
+  - cd webinterface/
+  - mvn test
+notifications:
+  email: false
