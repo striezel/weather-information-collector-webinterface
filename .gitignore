@@ -4,5 +4,8 @@ target/
 # ignore binary stuff
 bin/
 
+# settings from Eclipse
+.settings/
+
 # generated class files
 *.class
