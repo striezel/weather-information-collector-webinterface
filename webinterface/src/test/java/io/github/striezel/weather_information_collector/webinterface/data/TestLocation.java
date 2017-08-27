@@ -1,6 +1,6 @@
 /*
  -------------------------------------------------------------------------------
-    This file is part of the weather information collector.
+    This file is part of the weather information collector webinterface.
     Copyright (C) 2017  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
