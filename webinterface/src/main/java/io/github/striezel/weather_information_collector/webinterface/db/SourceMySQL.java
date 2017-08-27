@@ -66,6 +66,7 @@ public class SourceMySQL {
 			ds.setPassword(connInfo.password());
 		} catch (Exception e) {
 			e.printStackTrace();
+			return null;
 		}
 		return ds;
 	}
@@ -89,12 +90,14 @@ public class SourceMySQL {
 	 *         error occurred.
 	 */
 	public List<Location> listLocations() {
+		if (null == source)
+			return null;
 		Connection conn;
 		try {
 			conn = source.getConnection();
 			Statement stmt = conn.createStatement();
 			stmt.setQueryTimeout(10);
-			if (!stmt.execute("SELECT * FROM location WHERE NOT IS_NULL(name) ORDER BY name ASC;"))
+			if (!stmt.execute("SELECT * FROM location WHERE NOT ISNULL(name) ORDER BY name ASC;"))
 				return null;
 			ResultSet res = stmt.getResultSet();
 			List<Location> locations = new ArrayList<>();

@@ -53,13 +53,13 @@ public class Loader {
 		if ((home != null) && !home.isEmpty()) {
 			Path p = Paths.get(home);
 			li.add(p.resolve(
-					".weather-information-collector" + File.pathSeparator + "weather-information-collector.conf")
+					".weather-information-collector" + File.separator + "weather-information-collector.conf")
 					.toString());
-			li.add(p.resolve(".weather-information-collector" + File.pathSeparator + "wic.conf").toString());
-			li.add(p.resolve(".wic" + File.pathSeparator + "wic.conf").toString());
+			li.add(p.resolve(".weather-information-collector" + File.separator + "wic.conf").toString());
+			li.add(p.resolve(".wic" + File.separator + "wic.conf").toString());
 		}
-		li.add("." + File.pathSeparator + "weather-information-collector.conf");
-		li.add("." + File.pathSeparator + "wic.conf");
+		li.add("." + File.separator + "weather-information-collector.conf");
+		li.add("." + File.separator + "wic.conf");
 		return li;
 	}
 
