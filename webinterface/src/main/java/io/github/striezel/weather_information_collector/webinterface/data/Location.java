@@ -20,6 +20,11 @@
 
 package io.github.striezel.weather_information_collector.webinterface.data;
 
+/**
+ * Holds information about a location / city.
+ * 
+ * @author Dirk Stolle
+ */
 public class Location {
 
 	private int m_id;
