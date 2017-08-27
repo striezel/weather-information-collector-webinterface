@@ -1,4 +1,4 @@
-package io.github.striezel.weather_information_collector.webinterface;
+package io.github.striezel.weather_information_collector.webinterface.ui;
 
 import javax.servlet.annotation.WebServlet;
 import com.vaadin.annotations.Theme;
