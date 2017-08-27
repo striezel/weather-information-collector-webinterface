@@ -6,6 +6,10 @@ jdk:
   - oraclejdk8
 os:
   - linux
+addons:
+  apt:
+    packages:
+    - libmysql-java
 cache:
   directories:
   - .m2

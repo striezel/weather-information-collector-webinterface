@@ -72,6 +72,13 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.mysql</groupId>
+			<artifactId>jdbc</artifactId>
+			<version>LATEST</version>
+			<scope>system</scope>
+			<systemPath>/usr/share/java/mysql-connector-java.jar</systemPath>
+		</dependency>
 	</dependencies>
 
 	<build>
