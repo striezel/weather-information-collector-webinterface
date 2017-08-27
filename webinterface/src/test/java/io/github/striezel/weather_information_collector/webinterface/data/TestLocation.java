@@ -18,11 +18,10 @@
  -------------------------------------------------------------------------------
 */
 
-package io.github.striezel.weather_information_collector.data;
+package io.github.striezel.weather_information_collector.webinterface.data;
 
 import static org.junit.Assert.*;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import io.github.striezel.weather_information_collector.webinterface.data.Location;
