@@ -51,7 +51,6 @@ public class SourceMySQL {
 	 */
 	public SourceMySQL(ConnectionInformation ci) {
 		connInfo = ci;
-		prepare();
 		source = getMySQLDataSource();
 	}
 
@@ -69,18 +68,6 @@ public class SourceMySQL {
 			return null;
 		}
 		return ds;
-	}
-
-	private boolean prepare() {
-		System.out.println("Loading driver...");
-
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-			System.out.println("Driver loaded!");
-			return true;
-		} catch (ClassNotFoundException e) {
-			throw new IllegalStateException("Cannot find the driver in the classpath!", e);
-		}
 	}
 
 	/**
