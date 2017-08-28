@@ -79,6 +79,11 @@
 			<scope>system</scope>
 			<systemPath>/usr/share/java/mysql-connector-java.jar</systemPath>
 		</dependency>
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-charts</artifactId>
+			<version>4.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

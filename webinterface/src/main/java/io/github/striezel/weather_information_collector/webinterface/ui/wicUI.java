@@ -32,13 +32,17 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.ListSelect;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import io.github.striezel.weather_information_collector.webinterface.data.Location;
+import io.github.striezel.weather_information_collector.webinterface.data.Weather;
 import io.github.striezel.weather_information_collector.webinterface.db.ConnectionInformation;
 import io.github.striezel.weather_information_collector.webinterface.db.Loader;
 import io.github.striezel.weather_information_collector.webinterface.db.SourceMySQL;
+import io.github.striezel.weather_information_collector.webinterface.graph.Generator;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser
@@ -54,8 +58,65 @@ public class wicUI extends UI {
 
 	private static final long serialVersionUID = -1848954295477812552L;
 
+	private ConnectionInformation connInfo = null;
+	private Location selectedLocation = null;
+	private List<Location> availableLocations = null;
+
+	private Component graph = null;
+
+	/**
+	 * Loads available locations from the database.
+	 */
+	private void loadAvailableLocations() {
+		if (null == connInfo) {
+			availableLocations = null;
+			return;
+		}
+		SourceMySQL src = new SourceMySQL(connInfo);
+		availableLocations = src.listLocations();
+	}
+
+	/**
+	 * Finds a location by name.
+	 * 
+	 * @param name
+	 *            the name of the location
+	 * @return Returns the first matching location, if successful. Returns null, if
+	 *         no location was found.
+	 */
+	private Location findLocationByName(String name) {
+		if ((null == name) || name.isEmpty()) {
+			return null;
+		}
+		if (availableLocations == null)
+			return null;
+		// Remove square brackets, if they are present.
+		if (name.startsWith("[") && name.endsWith("]")) {
+			name = name.substring(1, name.length() - 1);
+		}
+		for (Location loc : availableLocations) {
+			if (loc.name().equals(name))
+				return loc;
+		} // for
+
+		// No matching location was found.
+		return null;
+	}
+
 	@Override
 	protected void init(VaadinRequest vaadinRequest) {
+		connInfo = Loader.load();
+		loadAvailableLocations();
+
+		updateGraph();
+		createLayout();
+	}
+
+	private void updateGraph() {
+		graph = graphComponent();
+	}
+
+	private void createLayout() {
 		final VerticalLayout layout = new VerticalLayout();
 
 		// header (Maybe there is a shorter / better text?)
@@ -67,7 +128,7 @@ public class wicUI extends UI {
 		// add location list
 		hl.addComponent(locationComponent());
 		// add graph
-		hl.addComponent(graphComponent());
+		hl.addComponent(graph);
 		// add it all to layout
 		layout.addComponent(hl);
 
@@ -80,15 +141,27 @@ public class wicUI extends UI {
 	 * @return Returns a component for graphical visualization.
 	 */
 	private Component graphComponent() {
-		VerticalLayout layout = new VerticalLayout();
+		if (null == selectedLocation) {
+			VerticalLayout layout = new VerticalLayout();
 
-		Label l1 = new Label("Imagine this to be a graph.");
-		l1.setIcon(VaadinIcons.CHART_LINE);
-		Label l2 = new Label("(The graph is not implemented yet.)");
-		l2.setIcon(VaadinIcons.COGS);
+			Label l1 = new Label("Please select a location from the list on the left.");
+			l1.setIcon(VaadinIcons.LIST_SELECT);
+			l1.setCaption("No city has been selected.");
 
-		layout.addComponents(l1, l2);
-		return layout;
+			layout.addComponents(l1);
+			return layout;
+		} else {
+			if (null == connInfo) {
+				return Utility.errorLabel("Could not find or load configuration file!");
+			}
+
+			SourceMySQL src = new SourceMySQL(connInfo);
+			List<Weather> data = src.fetchData(selectedLocation);
+			if (null == data) {
+				return Utility.errorLabel("Could not load data for " + selectedLocation.name() + " from database!");
+			}
+			return Generator.simple(selectedLocation, data);
+		}
 	}
 
 	/**
@@ -97,12 +170,11 @@ public class wicUI extends UI {
 	 * @return Returns a component with all location names.
 	 */
 	private Component locationComponent() {
-		ConnectionInformation ci = Loader.load();
-		if (null == ci) {
+		if (null == connInfo) {
 			return Utility.errorLabel("Could not find or load configuration file!");
 		}
 
-		SourceMySQL src = new SourceMySQL(ci);
+		SourceMySQL src = new SourceMySQL(connInfo);
 		List<Location> locations = src.listLocations();
 		if (null == locations) {
 			return Utility.errorLabel("Could not load list of locations from database!");
@@ -116,6 +188,16 @@ public class wicUI extends UI {
 			names.add(l.name());
 		}
 		list.setItems(names);
+
+		// selectedLocation = locations.get(0);
+		list.addValueChangeListener(event -> {
+			Notification.show("Location changed:", String.valueOf(event.getValue()), Type.TRAY_NOTIFICATION);
+			if (!event.getOldValue().toString().equals(event.getValue().toString())) {
+				selectedLocation = this.findLocationByName(String.valueOf(event.getValue()));
+				updateGraph();
+				createLayout();
+			}
+		});
 		return list;
 	}
 
