@@ -29,6 +29,10 @@ These can usually be installed by typing
 
     apt-get install openjdk-8-jdk maven libmysql-java jetty9
 
+or
+
+    yum install java-1.8.0-openjdk-headless maven mysql-connector-java jetty-runner
+
 into a root terminal.
 
 After the installation is through, type the following commands in the root
