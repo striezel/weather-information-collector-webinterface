@@ -28,8 +28,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import javax.sql.DataSource;
 
@@ -135,14 +135,14 @@ public class SourceMySQL {
 			res.close();
 			stmt.close();
 			stmt = conn.prepareStatement("SELECT DISTINCT dataTime, temperature_C, humidity, pressure FROM weatherdata"
-					+ " WHERE locationID = ? AND apiID = 2 ORDER dataTime ASC");
+					+ " WHERE locationID = ? AND apiID = 2 ORDER BY dataTime ASC");
 			stmt.setInt(1, locationId);
 			if (!stmt.execute())
 				return null;
 			res = stmt.getResultSet();
 			List<Weather> data = new ArrayList<>();
 			while (res.next()) {
-				Date dt = res.getDate("dataTime");
+				Timestamp dt = res.getTimestamp("dataTime");
 				if (res.wasNull())
 					dt = null;
 				float tempC = res.getFloat("temperature_C");

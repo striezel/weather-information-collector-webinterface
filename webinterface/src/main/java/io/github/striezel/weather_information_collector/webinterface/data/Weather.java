@@ -20,7 +20,7 @@
 
 package io.github.striezel.weather_information_collector.webinterface.data;
 
-import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * Holds information about one weather data point.
@@ -29,7 +29,7 @@ import java.util.Date;
  */
 public class Weather {
 
-	private Date dataTime;
+	private Timestamp dataTime;
 	private float tempC;
 	private int humidity;
 	private int pressure;
@@ -38,7 +38,7 @@ public class Weather {
 	 * default constructor
 	 */
 	public Weather() {
-		dataTime = new Date(0);
+		dataTime = new Timestamp(0);
 		tempC = Float.NaN;
 		humidity = -1;
 		pressure = -1;
@@ -50,7 +50,7 @@ public class Weather {
 	 * @return Returns true, if the instance has the time. Returns false otherwise.
 	 */
 	public boolean hasDataTime() {
-		return (!dataTime.equals(new Date(0)));
+		return (dataTime.getTime() != 0);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public class Weather {
 	 * @return Returns the time when the data was received / measured. Returns the
 	 *         epoch, if no time is set.
 	 */
-	public Date dataTime() {
+	public Timestamp dataTime() {
 		return dataTime;
 	}
 
@@ -69,11 +69,11 @@ public class Weather {
 	 * @param dt
 	 *            the new time when the data was received / measured
 	 */
-	public void setDataTime(Date dt) {
+	public void setDataTime(Timestamp dt) {
 		if (null != dt)
 			dataTime = dt;
 		else
-			dataTime = new Date(0);
+			dataTime = new Timestamp(0);
 	}
 
 	/**

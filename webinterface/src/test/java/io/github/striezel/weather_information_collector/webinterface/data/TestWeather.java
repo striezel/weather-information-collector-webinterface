@@ -23,6 +23,7 @@ package io.github.striezel.weather_information_collector.webinterface.data;
 import static org.junit.Assert.*;
 
 import java.util.Date;
+import java.sql.Timestamp;
 import org.junit.Test;
 
 public class TestWeather {
@@ -40,7 +41,7 @@ public class TestWeather {
 	@Test
 	public void setHasGetDataTime() {
 		Weather weather = new Weather();
-		final Date dt = new Date(System.currentTimeMillis());
+		final Timestamp dt = new Timestamp(System.currentTimeMillis());
 		weather.setDataTime(dt);
 		assertTrue(weather.hasDataTime());
 		assertEquals("Weather's dataTime does not match!", dt, weather.dataTime());
