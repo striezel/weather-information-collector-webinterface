@@ -1,0 +1,43 @@
+# This Dockerfile will set up a CentOS 7-based container that is able to
+# run the webinterface for weather-information-collector.
+#
+# Version 0.1
+#
+# History
+# -------
+#
+# version 0.1 - initial version
+
+# Use CentOS 7 as base image.
+FROM centos:7
+MAINTAINER Dirk Stolle <striezel-dev@web.de>
+
+# Packages should be up to date.
+RUN yum update -y
+
+# install Git: required for SCM checkout of project
+RUN yum install -y git
+# install JDK: required during build
+RUN yum install -y java-1.8.0-openjdk-headless
+# install Maven (Java build tool)
+RUN yum install -y maven
+# install MySQL Connector/J (dependency)
+RUN yum install -y mysql-connector-java
+# install Jetty server, version 9
+RUN yum install -y jetty-runner
+
+# Create directory where application will reside.
+RUN mkdir -p /opt/wic-web
+# Clone Git repository into that directory.
+RUN git clone https://github.com/striezel/weather-information-collector-webinterface.git /opt/wic-web
+
+# Relevant files are in the webinterface/ subdirectory of the Git repository.
+WORKDIR /opt/wic-web/webinterface
+# Build Maven project.
+RUN mvn install
+
+# Expose port 8080 - that is the default port for Jetty.
+EXPOSE 8080
+
+# Start Jetty server.
+CMD ["mvn", "jetty:run"]
