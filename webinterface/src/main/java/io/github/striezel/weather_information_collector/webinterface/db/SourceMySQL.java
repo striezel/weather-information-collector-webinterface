@@ -134,7 +134,7 @@ public class SourceMySQL {
 			}
 			res.close();
 			stmt.close();
-			stmt = conn.prepareStatement("SELECT dataTime, temperature_C, humidity, pressure FROM weatherdata"
+			stmt = conn.prepareStatement("SELECT DISTINCT dataTime, temperature_C, humidity, pressure FROM weatherdata"
 					+ " WHERE locationID = ? AND apiID = 2 ORDER dataTime ASC");
 			stmt.setInt(1, locationId);
 			if (!stmt.execute())
