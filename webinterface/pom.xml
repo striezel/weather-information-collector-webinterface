@@ -183,4 +183,8 @@
 		</profile>
 	</profiles>
 
+	<url>https://github.com/striezel/weather-information-collector-webinterface</url>
+	<scm>
+		<url>https://github.com/striezel/weather-information-collector-webinterface.git</url>
+	</scm>
 </project>
