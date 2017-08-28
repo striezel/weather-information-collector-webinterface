@@ -75,19 +75,6 @@ public class wicUI extends UI {
 	}
 
 	/**
-	 * Gets a label with error message.
-	 * 
-	 * @param value
-	 *            the error message
-	 * @return Returns a label that indicates an error with the given error message.
-	 */
-	private Label errorLabel(String value) {
-		Label errorLabel = new Label(value);
-		errorLabel.setStyleName(ValoTheme.LABEL_FAILURE);
-		return errorLabel;
-	}
-
-	/**
 	 * Provides a component that contains the graphical visualization of the data.
 	 * 
 	 * @return Returns a component for graphical visualization.
@@ -112,16 +99,16 @@ public class wicUI extends UI {
 	private Component locationComponent() {
 		ConnectionInformation ci = Loader.load();
 		if (null == ci) {
-			return errorLabel("Could not find or load configuration file!");
+			return Utility.errorLabel("Could not find or load configuration file!");
 		}
 
 		SourceMySQL src = new SourceMySQL(ci);
 		List<Location> locations = src.listLocations();
 		if (null == locations) {
-			return errorLabel("Could not load list of locations from database!");
+			return Utility.errorLabel("Could not load list of locations from database!");
 		}
 		if (locations.isEmpty()) {
-			return errorLabel("There are no locations in the database yet.");
+			return Utility.errorLabel("There are no locations in the database yet.");
 		}
 		ListSelect<String> list = new ListSelect<>();
 		List<String> names = new ArrayList<>(locations.size());
