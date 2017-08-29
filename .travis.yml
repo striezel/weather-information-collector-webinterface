@@ -12,7 +12,7 @@ addons:
     - libmysql-java
 cache:
   directories:
-  - ".m2"
+  - $HOME/.m2
 script:
 - echo $VAADIN_CHARTS > ~/vaadin.charts.developer.license
 - cd webinterface/
