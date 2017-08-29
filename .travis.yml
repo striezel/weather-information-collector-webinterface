@@ -2,19 +2,19 @@ language: java
 sudo: false
 dist: trusty
 jdk:
-  - openjdk8
-  - oraclejdk8
+- openjdk8
+- oraclejdk8
 os:
-  - linux
+- linux
 addons:
   apt:
     packages:
     - libmysql-java
 cache:
   directories:
-  - .m2
+  - ".m2"
 script:
-  - cd webinterface/
-  - mvn test
+- cd webinterface/
+- mvn test
 notifications:
   email: false
