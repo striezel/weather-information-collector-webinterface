@@ -189,11 +189,10 @@ public class wicUI extends UI {
 		}
 		list.setItems(names);
 
-		// selectedLocation = locations.get(0);
-		list.addValueChangeListener(event -> {
-			Notification.show("Location changed:", String.valueOf(event.getValue()), Type.TRAY_NOTIFICATION);
-			if (!event.getOldValue().toString().equals(event.getValue().toString())) {
-				selectedLocation = this.findLocationByName(String.valueOf(event.getValue()));
+		list.addSelectionListener(event -> {
+			Notification.show("City changed:", String.valueOf(event.getNewSelection()), Type.TRAY_NOTIFICATION);
+			if (!event.getOldSelection().toString().equals(event.getNewSelection().toString())) {
+				selectedLocation = this.findLocationByName(String.valueOf(event.getNewSelection()));
 				updateGraph();
 				createLayout();
 			}
