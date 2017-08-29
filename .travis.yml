@@ -14,7 +14,11 @@ cache:
   directories:
   - ".m2"
 script:
+- echo $VAADIN_CHARTS > ~/vaadin.charts.developer.license
 - cd webinterface/
 - mvn test
 notifications:
   email: false
+env:
+  global:
+    secure: cThcZ+HhfiGW1vryXiGI0RQP0+c1ecrct9d5yOJ0A+IMkqWRdiwc3p0xK4bWokPMlS09ms9r7X1ln1PN5+WqESkZeLHtAlA1RaLRSDzthI6RCnnt9Bngy5mnDxXfTa5oY4UXn3Uz5TtUHhJ3EM6AZRQH5pv3W8qc+czBUUd/2UXNQtx1bPkPUVNxSliCXtsNeRPPoUV0D4ZURaDYZmXUeOxfprVIFB11eOMhLBLz0xc/Im85cQ7vFepUdthkEaow89lx//X9Wm28+vk0CQotAUq1m8g7MR3NUpl71QXMOVGqtf7GTSi91l4fFgA9tBl+skE+c3lkOtmCMkWRX/8LSh5VI6TOZkUU9uxalU2Crj++sdxfA0uHJWcZgG24vn1bFzBbq6M5imsvm/0uJS87MUiIZIVsEUeRH9tr/xAgZmTVH1k0/AVqCdAMD0XEsrgSi09azP7NPGX5Hw0GuTQEzfk+kgbxJqKf/YpOCI2HaUg5PQFuecpJqzNnK9NTSRMY6Erno+RQ6+Sm8P4Q5eSKHluhKf5tucbip54GGC6a5krtglUrpV/xJVY/SYft48y71oPiTlmQu41TvQtG7YNqWmkADB9FSX7feNpExaz+iq1aMDWWrvyFg/Afrr1oSYsJ/ACR9WLxkQ3/lBs4JmqGLulnzfW0jVaJwaMCudLzl7Q=
