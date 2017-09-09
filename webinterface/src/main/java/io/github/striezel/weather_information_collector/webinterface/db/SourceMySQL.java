@@ -134,8 +134,9 @@ public class SourceMySQL {
 			}
 			res.close();
 			stmt.close();
-			stmt = conn.prepareStatement("SELECT DISTINCT dataTime, temperature_C, humidity, pressure FROM weatherdata"
-					+ " WHERE locationID = ? AND apiID = 2 ORDER BY dataTime ASC");
+			stmt = conn.prepareStatement(
+					"SELECT DISTINCT dataTime, temperature_C, humidity, rain, pressure FROM weatherdata"
+							+ " WHERE locationID = ? AND apiID = 2 ORDER BY dataTime ASC");
 			stmt.setInt(1, locationId);
 			if (!stmt.execute())
 				return null;
@@ -151,6 +152,9 @@ public class SourceMySQL {
 				int humidity = res.getInt("humidity");
 				if (res.wasNull())
 					humidity = -1;
+				float rain = res.getFloat("rain");
+				if (res.wasNull())
+					rain = Float.NaN;
 				int pressure = res.getInt("pressure");
 				if (res.wasNull())
 					pressure = 0;
@@ -159,6 +163,7 @@ public class SourceMySQL {
 				w.setDataTime(dt);
 				w.setTemperatureCelsius(tempC);
 				w.setHumidity(humidity);
+				w.setRain(rain);
 				w.setPressure(pressure);
 				data.add(w);
 			} // while

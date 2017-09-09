@@ -22,7 +22,6 @@ package io.github.striezel.weather_information_collector.webinterface.data;
 
 import static org.junit.Assert.*;
 
-import java.util.Date;
 import java.sql.Timestamp;
 import org.junit.Test;
 
@@ -35,6 +34,7 @@ public class TestWeather {
 		assertFalse(weather.hasDataTime());
 		assertFalse(weather.hasTemperatureCelsius());
 		assertFalse(weather.hasHumidity());
+		assertFalse(weather.hasRain());
 		assertFalse(weather.hasPressure());
 	}
 
@@ -73,6 +73,26 @@ public class TestWeather {
 		weather.setHumidity(101);
 		assertFalse(weather.hasHumidity());
 		assertTrue(weather.humidity() == -1);
+	}
+
+	@Test
+	public void setHasGetRain() {
+		Weather weather = new Weather();
+		weather.setRain(2.25f);
+		assertTrue(weather.hasRain());
+		assertTrue(weather.rain() == 2.25);
+	}
+
+	@Test
+	public void outOfRangeRain() {
+		Weather weather = new Weather();
+		weather.setRain(-5);
+		assertFalse(weather.hasRain());
+		assertTrue(Float.isNaN(weather.rain()));
+
+		weather.setRain(Float.POSITIVE_INFINITY);
+		assertFalse(weather.hasRain());
+		assertTrue(Float.isNaN(weather.rain()));
 	}
 
 	@Test

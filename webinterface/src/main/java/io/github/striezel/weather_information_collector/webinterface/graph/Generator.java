@@ -20,6 +20,7 @@
 
 package io.github.striezel.weather_information_collector.webinterface.graph;
 
+import java.time.Instant;
 import java.util.List;
 
 import com.vaadin.addon.charts.Chart;
@@ -28,6 +29,7 @@ import com.vaadin.addon.charts.model.ChartType;
 import com.vaadin.addon.charts.model.Configuration;
 import com.vaadin.addon.charts.model.DataSeries;
 import com.vaadin.addon.charts.model.DataSeriesItem;
+import com.vaadin.addon.charts.model.PlotOptionsColumn;
 import com.vaadin.addon.charts.model.PlotOptionsLine;
 import com.vaadin.addon.charts.model.PlotOptionsSpline;
 import com.vaadin.addon.charts.model.YAxis;
@@ -106,11 +108,15 @@ public class Generator {
 
 		DataSeries dataTemp = new DataSeries("Temperature");
 		DataSeries dataHum = new DataSeries("Humidity");
+		DataSeries dataRain = new DataSeries("Rain");
 		// DataSeries dataPress = new DataSeries("Pressure");
 
 		for (Weather w : data) {
-			dataTemp.add(new DataSeriesItem(w.dataTime().toInstant(), w.temperatureCelsius()));
-			dataHum.add(new DataSeriesItem(w.dataTime().toInstant(), w.humidity()));
+			Instant wInstant = w.dataTime().toInstant();
+			dataTemp.add(new DataSeriesItem(wInstant, w.temperatureCelsius()));
+			dataHum.add(new DataSeriesItem(wInstant, w.humidity()));
+			if (w.hasRain())
+				dataRain.add(new DataSeriesItem(wInstant, w.rain()));
 			// dataPress.add(new DataSeriesItem(w.dataTime().toInstant(), w.pressure()));
 		} // for
 
@@ -129,6 +135,24 @@ public class Generator {
 			humOpts.setColor(SolidColor.BLUE);
 			dataHum.setPlotOptions(humOpts);
 		}
+
+		if (dataRain.size() > 1) {
+			// Y axis for rain
+			YAxis rainAxis = new YAxis();
+			rainAxis.setTitle("Rain [mm]");
+			rainAxis.setOpposite(true);
+			Style style = new Style();
+			style.setColor(SolidColor.LIGHTBLUE);
+			rainAxis.getTitle().setStyle(style);
+			conf.addyAxis(rainAxis);
+
+			dataRain.setyAxis(2);
+			PlotOptionsColumn rainOpts = new PlotOptionsColumn();
+			rainOpts.setColor(SolidColor.LIGHTBLUE);
+			dataRain.setPlotOptions(rainOpts);
+
+			conf.addSeries(dataRain);
+		} // if there is rain data
 
 		/*
 		 * dataPress.setyAxis(2); { //set same color as pressure axis (green) for data

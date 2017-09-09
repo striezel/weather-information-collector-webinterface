@@ -32,6 +32,7 @@ public class Weather {
 	private Timestamp dataTime;
 	private float tempC;
 	private int humidity;
+	private float rain;
 	private int pressure;
 
 	/**
@@ -41,6 +42,7 @@ public class Weather {
 		dataTime = new Timestamp(0);
 		tempC = Float.NaN;
 		humidity = -1;
+		rain = Float.NaN;
 		pressure = -1;
 	}
 
@@ -136,6 +138,39 @@ public class Weather {
 			humidity = -1;
 		else
 			humidity = newHumidity;
+	}
+
+	/**
+	 * Checks whether this instance has information about rain.
+	 * 
+	 * @return Returns true, if the instance has rain information. Returns false
+	 *         otherwise.
+	 */
+	public boolean hasRain() {
+		return !Float.isNaN(rain);
+	}
+
+	/**
+	 * Gets the amount of rain in millimeters per square meter, if it was set.
+	 * 
+	 * @return Returns the amount of rain in millimeters. Returns NaN, if no rain
+	 *         information is set.
+	 */
+	public float rain() {
+		return rain;
+	}
+
+	/**
+	 * Sets the amount of rain in millimeters per square meter.
+	 * 
+	 * @param newRainMm
+	 *            new amount of rain in millimeters per square meter
+	 */
+	public void setRain(float newRainMm) {
+		if ((newRainMm >= 0.0f) && !Float.isInfinite(newRainMm))
+			rain = newRainMm;
+		else
+			rain = Float.NaN;
 	}
 
 	/**
