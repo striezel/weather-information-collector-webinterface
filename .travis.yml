@@ -12,7 +12,7 @@ addons:
     - libmysql-java
 cache:
   directories:
-  - $HOME/.m2
+  - "$HOME/.m2"
 script:
 - echo $VAADIN_CHARTS > ~/vaadin.charts.developer.license
 - cd webinterface/
@@ -21,4 +21,4 @@ notifications:
   email: false
 env:
   global:
-    secure: cThcZ+HhfiGW1vryXiGI0RQP0+c1ecrct9d5yOJ0A+IMkqWRdiwc3p0xK4bWokPMlS09ms9r7X1ln1PN5+WqESkZeLHtAlA1RaLRSDzthI6RCnnt9Bngy5mnDxXfTa5oY4UXn3Uz5TtUHhJ3EM6AZRQH5pv3W8qc+czBUUd/2UXNQtx1bPkPUVNxSliCXtsNeRPPoUV0D4ZURaDYZmXUeOxfprVIFB11eOMhLBLz0xc/Im85cQ7vFepUdthkEaow89lx//X9Wm28+vk0CQotAUq1m8g7MR3NUpl71QXMOVGqtf7GTSi91l4fFgA9tBl+skE+c3lkOtmCMkWRX/8LSh5VI6TOZkUU9uxalU2Crj++sdxfA0uHJWcZgG24vn1bFzBbq6M5imsvm/0uJS87MUiIZIVsEUeRH9tr/xAgZmTVH1k0/AVqCdAMD0XEsrgSi09azP7NPGX5Hw0GuTQEzfk+kgbxJqKf/YpOCI2HaUg5PQFuecpJqzNnK9NTSRMY6Erno+RQ6+Sm8P4Q5eSKHluhKf5tucbip54GGC6a5krtglUrpV/xJVY/SYft48y71oPiTlmQu41TvQtG7YNqWmkADB9FSX7feNpExaz+iq1aMDWWrvyFg/Afrr1oSYsJ/ACR9WLxkQ3/lBs4JmqGLulnzfW0jVaJwaMCudLzl7Q=
+    secure: IsTXNpbKMTeMadWfZHbAAY9DOPRyVJ6C0R4djhG8RrPZuhTVT5fMs297sPqf/3wIyUmfoFkZ+jhTPW1VGxPcY8p1edu2G7eg9h1s/C89MvvLe6ngoXwHEzS9DxTIOv4HvYGzQSlloQ3yvVfxvOP5aGGtQ4sGkAhPFcoA5Wmj9Tlg+9Mkrwh5OJ7Cn91qEB43QOAlRs0u9cWYB6Ej8UtGBTrCApE9rPAnFK5qYAjLKxiuq1eoBji4AdR5lOyljjCZF2rkz9YjEHddwjx8bePquRpxdllk6dooUHSkXjK3FcLgJecDejXcjgvAkpv0KdM+KiNwlGjmKWRIJW9nf+U/eXDKClfOwlNGjc96lnRZQzn+4CgSozRjsRyAIGzCdskKFQHoI87d++oNE8z4+UV1n1vQE3yWHsmHJ9lKMTRgY4MW23FrHA+JCWRkPgeVF9JezbtuvdIXEeoTfXT4ceczHSLhYDtdCBqh+OUUzPIJXxIRwmo+JLHZNwlNZ5i7cOLsyyUl0Fpad+wXnUz3Is5r5GSYvScvSUSHtG61VbQf6DXBhnzhQqz7iGHDdXZVeugtOV5eJmOgla4PYFVh22jn6+SEfEQnFti1SqF+S0ogFsfl80o/b+qrnlsA2YmxqKVP2Su1EdX9WvsmK/oGbc2yIwPD4OdUWynDwI+bD+FistM=
