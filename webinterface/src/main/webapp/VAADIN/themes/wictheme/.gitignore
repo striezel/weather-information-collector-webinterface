@@ -1,0 +1,3 @@
+# The file styles.css gets regenerated during every build by Vaadin anyway, so
+# we do not need to check it into version control.
+styles.css
