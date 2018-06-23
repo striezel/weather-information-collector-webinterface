@@ -22,13 +22,11 @@ package io.github.striezel.weather_information_collector.webinterface.graph;
 import com.vaadin.ui.Component;
 import io.github.striezel.weather_information_collector.webinterface.data.Location;
 import io.github.striezel.weather_information_collector.webinterface.data.Weather;
-import io.github.striezel.weather_information_collector.webinterface.plotly.MultiTimeSeriesChartComponent;
+import io.github.striezel.weather_information_collector.webinterface.plotly.SingleLocationSingleApiChart;
 import io.github.striezel.weather_information_collector.webinterface.ui.Utility;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Generates graphs / charts.
@@ -53,41 +51,22 @@ public class Generator {
             return Utility.errorLabel("Chart error: There is no data for the city " + loc.name() + ".");
         }
 
+        // Sort data by timestamp, because some chart implementations need it.
         data.sort((Weather a, Weather b) -> {
             return a.dataTime().compareTo(b.dataTime());
         });
 
         final List<Double> dataTemp = new ArrayList<>(data.size());
-        final List<Double> dataHum = new ArrayList<>(data.size());
-        final List<Double> dataRain = new ArrayList<>(data.size());
+        final List<Integer> dataHum = new ArrayList<>(data.size());
+        // TODO: add rain data
         final List<Timestamp> dates = new ArrayList<>(data.size());
         for (Weather w : data) {
             dates.add(w.dataTime());
             dataTemp.add((double) w.temperatureCelsius());
-            dataHum.add((double) w.humidity());
-            if (w.hasRain()) {
-                dataRain.add((double) w.rain());
-            } else {
-                dataRain.add(null);
-            }
+            dataHum.add(w.humidity());
         } // for
-
-        final Map<String, List<Double>> chartData = new HashMap<>(3);
-        chartData.put("Temperature [°C]", dataTemp);
-        chartData.put("Humidity [%]", dataHum);
-        // Only add rain data, if there are non-null values.
-        boolean addRain = !dataRain.isEmpty()
-                && dataRain.get(0) != null
-                && dataRain.get(dataRain.size() - 1) != null;
-        if (addRain) {
-            chartData.put("Rain [mm]", dataRain);
-        }
-
-        Component chart = new MultiTimeSeriesChartComponent(
-                "Weather data for " + loc.name(), dates, chartData);
-
-        // TODO: axis for temperature, red
-        // TODO: axis for humidity, blue
+        Component chart = new SingleLocationSingleApiChart(
+                loc, dates, dataTemp, dataHum);
         // TODO: axis for rain, light blue
         return chart;
     }
