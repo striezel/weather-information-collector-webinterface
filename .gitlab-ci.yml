@@ -1,0 +1,13 @@
+# Use the official openjdk image, based on debian.
+# It can use version tags as well, like openjdk:8.
+# See https://hub.docker.com/_/openjdk/ for more info.
+image: openjdk:8
+
+build:
+  stage: build
+  before_script: 
+    - apt-get update && apt-get -y install maven libmysql-java
+  script: 
+    - cd ./webinterface
+    - mvn test
+    - mvn install
