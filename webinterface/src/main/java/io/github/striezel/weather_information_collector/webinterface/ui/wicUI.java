@@ -198,6 +198,7 @@ public class wicUI extends UI {
                 createLayout();
             }
         });
+        list.setCaption("Location:");
         return list;
     }
 
