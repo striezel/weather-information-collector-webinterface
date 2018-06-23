@@ -6,6 +6,7 @@
 # History
 # -------
 #
+# version 0.3 - remove Vaadin Charts adjustments, because Plotly is used now
 # version 0.2 - adjustment for Vaadin Charts license
 #             - do not install Jetty 9, package is not required
 # version 0.1 - initial version
@@ -30,12 +31,6 @@ RUN yum install -y mysql-connector-java
 RUN mkdir -p /opt/wic-web
 # Clone Git repository into that directory.
 RUN git clone https://github.com/striezel/weather-information-collector-webinterface.git /opt/wic-web
-
-# Copy developer license for Vaadin Charts - if you do not have one, get one at
-# https://vaadin.com.
-# Please adjust the following line to reflect your license key.
-ENV VAADIN_LICENSE 01234567-89ab-cdef-0123-456789abcdef
-RUN echo $VAADIN_LICENSE > /root/vaadin.charts.developer.license
 
 # Relevant files are in the webinterface/ subdirectory of the Git repository.
 WORKDIR /opt/wic-web/webinterface
