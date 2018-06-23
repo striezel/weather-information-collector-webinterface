@@ -25,29 +25,27 @@ import com.vaadin.ui.themes.ValoTheme;
 
 /**
  * Provides some utility methods for the UI.
+ *
  * @author Dirk Stolle
  */
 public class Utility {
 
-	/**
-	 * Gets a label with error message.
-	 * 
-	 * @param value
-	 *            the error message
-	 * @return Returns a label that indicates an error with the given error message.
-	 */
-	public static Label errorLabel(String value) {
-		Label errorLabel;
-		if ((null!= value) && !value.isEmpty())
-		{
-			errorLabel = new Label(value);	
-		}
-		else
-		{
-			errorLabel = new Label("An unspecified error occurred!");
-		}
-		errorLabel.setStyleName(ValoTheme.LABEL_FAILURE);
-		return errorLabel;
-	}
-	
+    /**
+     * Gets a label with error message.
+     *
+     * @param value the error message
+     * @return Returns a label that indicates an error with the given error
+     * message.
+     */
+    public static Label errorLabel(String value) {
+        Label errorLabel;
+        if ((null != value) && !value.isEmpty()) {
+            errorLabel = new Label(value);
+        } else {
+            errorLabel = new Label("An unspecified error occurred!");
+        }
+        errorLabel.setStyleName(ValoTheme.LABEL_FAILURE);
+        return errorLabel;
+    }
+
 }

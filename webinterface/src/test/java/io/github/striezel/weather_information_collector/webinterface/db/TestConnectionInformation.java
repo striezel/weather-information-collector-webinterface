@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the weather information collector webinterface.
-    Copyright (C) 2017  Dirk Stolle
+    Copyright (C) 2017, 2018  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,99 +25,98 @@ import org.junit.Test;
 
 public class TestConnectionInformation {
 
-	/**
-	 * Tests the preset values of the default constructor.
-	 */
-	@Test
-	public void defaultConstructor() {
-		ConnectionInformation connInfo = new ConnectionInformation();
+    /**
+     * Tests the preset values of the default constructor.
+     */
+    @Test
+    public void defaultConstructor() {
+        ConnectionInformation connInfo = new ConnectionInformation();
 
-		assertTrue(connInfo.hostname() == "localhost");
-		assertTrue(connInfo.db() == "database");
-		assertTrue(connInfo.user() == "root");
-		assertTrue(connInfo.password() == "");
-		assertTrue(connInfo.port() == ConnectionInformation.defaultMySqlPort);
-	}
+        assertTrue(connInfo.hostname().equals("localhost"));
+        assertTrue(connInfo.db().equals("database"));
+        assertTrue(connInfo.user().equals("root"));
+        assertTrue(connInfo.password().equals(""));
+        assertTrue(connInfo.port() == ConnectionInformation.defaultMySqlPort);
+    }
 
-	/**
-	 * Tests whether the constructor with parameters sets the values properly.
-	 */
-	@Test
-	public void constructorWithParameters() {
-		ConnectionInformation connInfo = new ConnectionInformation("db-server", "db_one", "foo", "bar", 3307);
+    /**
+     * Tests whether the constructor with parameters sets the values properly.
+     */
+    @Test
+    public void constructorWithParameters() {
+        ConnectionInformation connInfo = new ConnectionInformation("db-server", "db_one", "foo", "bar", 3307);
 
-		assertTrue(connInfo.hostname() == "db-server");
-		assertTrue(connInfo.db() == "db_one");
-		assertTrue(connInfo.user() == "foo");
-		assertTrue(connInfo.password() == "bar");
-		assertTrue(connInfo.port() == 3307);
-	}
+        assertTrue(connInfo.hostname().equals("db-server"));
+        assertTrue(connInfo.db().equals("db_one"));
+        assertTrue(connInfo.user().equals("foo"));
+        assertTrue(connInfo.password().equals("bar"));
+        assertTrue(connInfo.port() == 3307);
+    }
 
-	/**
-	 * Tests whether isComplete() returns true, if information is complete.
-	 */
-	@Test
-	public void testForIsComplete_positive() {
-		ConnectionInformation connInfo = new ConnectionInformation();
-		assertTrue(connInfo.isComplete());
+    /**
+     * Tests whether isComplete() returns true, if information is complete.
+     */
+    @Test
+    public void testForIsComplete_positive() {
+        ConnectionInformation connInfo = new ConnectionInformation();
+        assertTrue(connInfo.isComplete());
 
-		connInfo = new ConnectionInformation("db-server", "db_one", "foo", "bar", 3307);
-		assertTrue(connInfo.isComplete());
+        connInfo = new ConnectionInformation("db-server", "db_one", "foo", "bar", 3307);
+        assertTrue(connInfo.isComplete());
 
-		// empty password - still complete
-		connInfo = new ConnectionInformation("db-server", "db_one", "foo", "", 3307);
-		assertTrue(connInfo.isComplete());
-	}
+        // empty password - still complete
+        connInfo = new ConnectionInformation("db-server", "db_one", "foo", "", 3307);
+        assertTrue(connInfo.isComplete());
+    }
 
-	/**
-	 * Tests whether isComplete() returns false, if information is incomplete.
-	 */
-	@Test
-	public void testForIsComplete_negative() {
-		ConnectionInformation connInfo;
+    /**
+     * Tests whether isComplete() returns false, if information is incomplete.
+     */
+    @Test
+    public void testForIsComplete_negative() {
+        ConnectionInformation connInfo;
 
-		connInfo = new ConnectionInformation("", "", "", "", 0);
-		assertFalse(connInfo.isComplete());
+        connInfo = new ConnectionInformation("", "", "", "", 0);
+        assertFalse(connInfo.isComplete());
 
-		connInfo = new ConnectionInformation("", "db_one", "foo", "bar", 3307);
-		assertFalse(connInfo.isComplete());
+        connInfo = new ConnectionInformation("", "db_one", "foo", "bar", 3307);
+        assertFalse(connInfo.isComplete());
 
-		connInfo = new ConnectionInformation("db-server", "", "foo", "bar", 3307);
-		assertFalse(connInfo.isComplete());
+        connInfo = new ConnectionInformation("db-server", "", "foo", "bar", 3307);
+        assertFalse(connInfo.isComplete());
 
-		connInfo = new ConnectionInformation("db-server", "db_one", "", "bar", 3307);
-		assertFalse(connInfo.isComplete());
+        connInfo = new ConnectionInformation("db-server", "db_one", "", "bar", 3307);
+        assertFalse(connInfo.isComplete());
 
-		connInfo = new ConnectionInformation("db-server", "db_one", "foo", "", 3307);
-		// Empty password may be allowed.
-		assertTrue(connInfo.isComplete());
+        connInfo = new ConnectionInformation("db-server", "db_one", "foo", "", 3307);
+        // Empty password may be allowed.
+        assertTrue(connInfo.isComplete());
 
-		connInfo = new ConnectionInformation("db-server", "db_one", "foo", "bar", 0);
-		assertFalse(connInfo.isComplete());
-		
-		
-		connInfo = new ConnectionInformation(null, null, null, null, 0);
-		assertFalse(connInfo.isComplete());
+        connInfo = new ConnectionInformation("db-server", "db_one", "foo", "bar", 0);
+        assertFalse(connInfo.isComplete());
 
-		connInfo = new ConnectionInformation(null, "db_one", "foo", "bar", 3307);
-		assertFalse(connInfo.isComplete());
+        connInfo = new ConnectionInformation(null, null, null, null, 0);
+        assertFalse(connInfo.isComplete());
 
-		connInfo = new ConnectionInformation("db-server", null, "foo", "bar", 3307);
-		assertFalse(connInfo.isComplete());
+        connInfo = new ConnectionInformation(null, "db_one", "foo", "bar", 3307);
+        assertFalse(connInfo.isComplete());
 
-		connInfo = new ConnectionInformation("db-server", "db_one", null, "bar", 3307);
-		assertFalse(connInfo.isComplete());
+        connInfo = new ConnectionInformation("db-server", null, "foo", "bar", 3307);
+        assertFalse(connInfo.isComplete());
 
-		connInfo = new ConnectionInformation("db-server", "db_one", "foo", null, 3307);
-		// Empty password may be allowed.
-		assertTrue(connInfo.isComplete());
+        connInfo = new ConnectionInformation("db-server", "db_one", null, "bar", 3307);
+        assertFalse(connInfo.isComplete());
 
-		//port out of range
-		connInfo = new ConnectionInformation("db-server", "db_one", "foo", "bar", -30);
-		assertFalse(connInfo.isComplete());
-		
-		connInfo = new ConnectionInformation("db-server", "db_one", "foo", "bar", 230000);
-		assertFalse(connInfo.isComplete());
-	}
+        connInfo = new ConnectionInformation("db-server", "db_one", "foo", null, 3307);
+        // Empty password may be allowed.
+        assertTrue(connInfo.isComplete());
+
+        //port out of range
+        connInfo = new ConnectionInformation("db-server", "db_one", "foo", "bar", -30);
+        assertFalse(connInfo.isComplete());
+
+        connInfo = new ConnectionInformation("db-server", "db_one", "foo", "bar", 230000);
+        assertFalse(connInfo.isComplete());
+    }
 
 }

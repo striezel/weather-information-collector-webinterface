@@ -37,62 +37,62 @@ import org.junit.Test;
 
 public class TestLoader {
 
-	/**
-	 * Setup method for test class: creates an example for a configuration file.
-	 */
-	@BeforeClass
-	public static void setUp() {
-		List<String> lines = Arrays.asList("# Comment was here!", "", "db.host=some-server.example.com",
-				"db.name=weather_information_collector", "db.user=wic", "db.password=secret", "db.port=1234");
-		Path file = Paths.get("test-file-configuration.conf");
-		try {
-			Files.write(file, lines, Charset.forName("UTF-8"));
-		} catch (IOException e) {
-			e.printStackTrace();
-			fail("setUp() failed!");
-		}
-	}
+    /**
+     * Setup method for test class: creates an example for a configuration file.
+     */
+    @BeforeClass
+    public static void setUp() {
+        List<String> lines = Arrays.asList("# Comment was here!", "", "db.host=some-server.example.com",
+                "db.name=weather_information_collector", "db.user=wic", "db.password=secret", "db.port=1234");
+        Path file = Paths.get("test-file-configuration.conf");
+        try {
+            Files.write(file, lines, Charset.forName("UTF-8"));
+        } catch (IOException e) {
+            e.printStackTrace();
+            fail("setUp() failed!");
+        }
+    }
 
-	/**
-	 * Tear down method for test class: deletes the example configuration file.
-	 */
-	@AfterClass
-	public static void tearDown() {
-		File f = new File("test-file-configuration.conf");
-		if (f.exists()) {
-			f.delete();
-		}
-	}
+    /**
+     * Tear down method for test class: deletes the example configuration file.
+     */
+    @AfterClass
+    public static void tearDown() {
+        File f = new File("test-file-configuration.conf");
+        if (f.exists()) {
+            f.delete();
+        }
+    }
 
-	/**
-	 * Tests whether some default configuration file names are defined.
-	 */
-	@Test
-	public void defaultConfigurationFileNames() {
-		List<String> fileNames = Loader.defaultConfigurationFileNames();
+    /**
+     * Tests whether some default configuration file names are defined.
+     */
+    @Test
+    public void defaultConfigurationFileNames() {
+        List<String> fileNames = Loader.defaultConfigurationFileNames();
 
-		assertFalse(fileNames.isEmpty());
-		for (String fn : fileNames) {
-			assertTrue(fn.endsWith(".conf"));
-		}
-	}
+        assertFalse(fileNames.isEmpty());
+        for (String fn : fileNames) {
+            assertTrue(fn.endsWith(".conf"));
+        }
+    }
 
-	/**
-	 * Tests whether the loading mechanism works as expected.
-	 */
-	@Test
-	public void loadWithFileName() {
-		ConnectionInformation ci = Loader.load("test-file-configuration.conf");
+    /**
+     * Tests whether the loading mechanism works as expected.
+     */
+    @Test
+    public void loadWithFileName() {
+        ConnectionInformation ci = Loader.load("test-file-configuration.conf");
 
-		//Function result must not be null.
-		assertNotNull(ci);
+        //Function result must not be null.
+        assertNotNull(ci);
 
-		//Check individual values.
-		assertEquals("some-server.example.com", ci.hostname());
-		assertEquals("weather_information_collector", ci.db());
-		assertEquals("wic", ci.user());
-		assertEquals("secret", ci.password());
-		assertEquals(1234, ci.port());
-	}
+        //Check individual values.
+        assertEquals("some-server.example.com", ci.hostname());
+        assertEquals("weather_information_collector", ci.db());
+        assertEquals("wic", ci.user());
+        assertEquals("secret", ci.password());
+        assertEquals(1234, ci.port());
+    }
 
 }

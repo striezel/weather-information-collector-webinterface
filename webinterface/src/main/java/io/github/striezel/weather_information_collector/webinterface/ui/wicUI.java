@@ -16,8 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  -------------------------------------------------------------------------------
-*/
-
+ */
 package io.github.striezel.weather_information_collector.webinterface.ui;
 
 import java.util.ArrayList;
@@ -56,154 +55,156 @@ import io.github.striezel.weather_information_collector.webinterface.graph.Gener
 @Theme("wictheme")
 public class wicUI extends UI {
 
-	private static final long serialVersionUID = -1848954295477812552L;
+    private static final long serialVersionUID = -1848954295477812552L;
 
-	private ConnectionInformation connInfo = null;
-	private Location selectedLocation = null;
-	private List<Location> availableLocations = null;
+    private ConnectionInformation connInfo = null;
+    private Location selectedLocation = null;
+    private List<Location> availableLocations = null;
 
-	private Component graph = null;
+    private Component graph = null;
 
-	/**
-	 * Loads available locations from the database.
-	 */
-	private void loadAvailableLocations() {
-		if (null == connInfo) {
-			availableLocations = null;
-			return;
-		}
-		SourceMySQL src = new SourceMySQL(connInfo);
-		availableLocations = src.listLocations();
-	}
+    /**
+     * Loads available locations from the database.
+     */
+    private void loadAvailableLocations() {
+        if (null == connInfo) {
+            availableLocations = null;
+            return;
+        }
+        SourceMySQL src = new SourceMySQL(connInfo);
+        availableLocations = src.listLocations();
+    }
 
-	/**
-	 * Finds a location by name.
-	 * 
-	 * @param name
-	 *            the name of the location
-	 * @return Returns the first matching location, if successful. Returns null, if
-	 *         no location was found.
-	 */
-	private Location findLocationByName(String name) {
-		if ((null == name) || name.isEmpty()) {
-			return null;
-		}
-		if (availableLocations == null)
-			return null;
-		// Remove square brackets, if they are present.
-		if (name.startsWith("[") && name.endsWith("]")) {
-			name = name.substring(1, name.length() - 1);
-		}
-		for (Location loc : availableLocations) {
-			if (loc.name().equals(name))
-				return loc;
-		} // for
+    /**
+     * Finds a location by name.
+     *
+     * @param name the name of the location
+     * @return Returns the first matching location, if successful. Returns null,
+     * if no location was found.
+     */
+    private Location findLocationByName(String name) {
+        if ((null == name) || name.isEmpty()) {
+            return null;
+        }
+        if (availableLocations == null) {
+            return null;
+        }
+        // Remove square brackets, if they are present.
+        if (name.startsWith("[") && name.endsWith("]")) {
+            name = name.substring(1, name.length() - 1);
+        }
+        for (Location loc : availableLocations) {
+            if (loc.name().equals(name)) {
+                return loc;
+            }
+        } // for
 
-		// No matching location was found.
-		return null;
-	}
+        // No matching location was found.
+        return null;
+    }
 
-	@Override
-	protected void init(VaadinRequest vaadinRequest) {
-		connInfo = Loader.load();
-		loadAvailableLocations();
+    @Override
+    protected void init(VaadinRequest vaadinRequest) {
+        connInfo = Loader.load();
+        loadAvailableLocations();
 
-		updateGraph();
-		createLayout();
-	}
+        updateGraph();
+        createLayout();
+    }
 
-	private void updateGraph() {
-		graph = graphComponent();
-	}
+    private void updateGraph() {
+        graph = graphComponent();
+    }
 
-	private void createLayout() {
-		final VerticalLayout layout = new VerticalLayout();
+    private void createLayout() {
+        final VerticalLayout layout = new VerticalLayout();
 
-		// header (Maybe there is a shorter / better text?)
-		Label header = new Label("Weather information collector's data");
-		header.addStyleName(ValoTheme.LABEL_H1);
-		layout.addComponent(header);
+        // header (Maybe there is a shorter / better text?)
+        Label header = new Label("Weather information collector's data");
+        header.addStyleName(ValoTheme.LABEL_H1);
+        layout.addComponent(header);
 
-		HorizontalLayout hl = new HorizontalLayout();
-		// add location list
-		hl.addComponent(locationComponent());
-		// add graph
-		hl.addComponent(graph);
-		// add it all to layout
-		layout.addComponent(hl);
+        HorizontalLayout hl = new HorizontalLayout();
+        // add location list
+        hl.addComponent(locationComponent());
+        // add graph
+        hl.addComponent(graph);
+        // add it all to layout
+        layout.addComponent(hl);
 
-		setContent(layout);
-	}
+        setContent(layout);
+    }
 
-	/**
-	 * Provides a component that contains the graphical visualization of the data.
-	 * 
-	 * @return Returns a component for graphical visualization.
-	 */
-	private Component graphComponent() {
-		if (null == selectedLocation) {
-			VerticalLayout layout = new VerticalLayout();
+    /**
+     * Provides a component that contains the graphical visualization of the
+     * data.
+     *
+     * @return Returns a component for graphical visualization.
+     */
+    private Component graphComponent() {
+        if (null == selectedLocation) {
+            VerticalLayout layout = new VerticalLayout();
 
-			Label l1 = new Label("Please select a location from the list on the left.");
-			l1.setIcon(VaadinIcons.LIST_SELECT);
-			l1.setCaption("No city has been selected.");
+            Label l1 = new Label("Please select a location from the list on the left.");
+            l1.setIcon(VaadinIcons.LIST_SELECT);
+            l1.setCaption("No city has been selected.");
 
-			layout.addComponents(l1);
-			return layout;
-		} else {
-			if (null == connInfo) {
-				return Utility.errorLabel("Could not find or load configuration file!");
-			}
+            layout.addComponents(l1);
+            return layout;
+        } else {
+            if (null == connInfo) {
+                return Utility.errorLabel("Could not find or load configuration file!");
+            }
 
-			SourceMySQL src = new SourceMySQL(connInfo);
-			List<Weather> data = src.fetchData(selectedLocation);
-			if (null == data) {
-				return Utility.errorLabel("Could not load data for " + selectedLocation.name() + " from database!");
-			}
-			return Generator.simple(selectedLocation, data);
-		}
-	}
+            SourceMySQL src = new SourceMySQL(connInfo);
+            List<Weather> data = src.fetchData(selectedLocation);
+            if (null == data) {
+                return Utility.errorLabel("Could not load data for " + selectedLocation.name() + " from database!");
+            }
+            return Generator.simple(selectedLocation, data);
+        }
+    }
 
-	/**
-	 * Provides a component that contains all location names.
-	 * 
-	 * @return Returns a component with all location names.
-	 */
-	private Component locationComponent() {
-		if (null == connInfo) {
-			return Utility.errorLabel("Could not find or load configuration file!");
-		}
+    /**
+     * Provides a component that contains all location names.
+     *
+     * @return Returns a component with all location names.
+     */
+    private Component locationComponent() {
+        if (null == connInfo) {
+            return Utility.errorLabel("Could not find or load configuration file!");
+        }
 
-		SourceMySQL src = new SourceMySQL(connInfo);
-		List<Location> locations = src.listLocations();
-		if (null == locations) {
-			return Utility.errorLabel("Could not load list of locations from database!");
-		}
-		if (locations.isEmpty()) {
-			return Utility.errorLabel("There are no locations in the database yet.");
-		}
-		ListSelect<String> list = new ListSelect<>();
-		List<String> names = new ArrayList<>(locations.size());
-		for (Location l : locations) {
-			names.add(l.name());
-		}
-		list.setItems(names);
+        SourceMySQL src = new SourceMySQL(connInfo);
+        List<Location> locations = src.listLocations();
+        if (null == locations) {
+            return Utility.errorLabel("Could not load list of locations from database!");
+        }
+        if (locations.isEmpty()) {
+            return Utility.errorLabel("There are no locations in the database yet.");
+        }
+        ListSelect<String> list = new ListSelect<>();
+        List<String> names = new ArrayList<>(locations.size());
+        locations.stream().forEach((l) -> {
+            names.add(l.name());
+        });
+        list.setItems(names);
 
-		list.addSelectionListener(event -> {
-			Notification.show("City changed:", String.valueOf(event.getNewSelection()), Type.TRAY_NOTIFICATION);
-			if (!event.getOldSelection().toString().equals(event.getNewSelection().toString())) {
-				selectedLocation = this.findLocationByName(String.valueOf(event.getNewSelection()));
-				updateGraph();
-				createLayout();
-			}
-		});
-		return list;
-	}
+        list.addSelectionListener(event -> {
+            Notification.show("City changed:", String.valueOf(event.getNewSelection()), Type.TRAY_NOTIFICATION);
+            if (!event.getOldSelection().toString().equals(event.getNewSelection().toString())) {
+                selectedLocation = this.findLocationByName(String.valueOf(event.getNewSelection()));
+                updateGraph();
+                createLayout();
+            }
+        });
+        return list;
+    }
 
-	@WebServlet(urlPatterns = "/*", name = "wicUIServlet", asyncSupported = true)
-	@VaadinServletConfiguration(ui = wicUI.class, productionMode = false)
-	public static class wicUIServlet extends VaadinServlet {
+    @WebServlet(urlPatterns = "/*", name = "wicUIServlet", asyncSupported = true)
+    @VaadinServletConfiguration(ui = wicUI.class, productionMode = false)
+    public static class wicUIServlet extends VaadinServlet {
 
-		private static final long serialVersionUID = 3308539348250205926L;
-	}
+        private static final long serialVersionUID = 3308539348250205926L;
+    }
 }
