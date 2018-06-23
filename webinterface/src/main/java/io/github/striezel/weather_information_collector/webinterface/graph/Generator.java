@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the weather information collector webinterface.
-    Copyright (C) 2017  Dirk Stolle
+    Copyright (C) 2017, 2018  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -16,8 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  -------------------------------------------------------------------------------
-*/
-
+ */
 package io.github.striezel.weather_information_collector.webinterface.graph;
 
 import java.time.Instant;
@@ -42,130 +41,112 @@ import io.github.striezel.weather_information_collector.webinterface.data.Weathe
 import io.github.striezel.weather_information_collector.webinterface.ui.Utility;
 
 /**
- * Generates graphs / Vaadin charts.
- * 
+ * Generates graphs / charts.
+ *
  * @author Dirk Stolle
  */
 public class Generator {
 
-	/**
-	 * Creates a simple chart with temperature and humidity data.
-	 * 
-	 * @param loc
-	 *            the location / city
-	 * @param data
-	 *            list of data points
-	 * @return Returns a chart that displays temperature and humidity of the given
-	 *         location.
-	 */
-	public static Component simple(Location loc, List<Weather> data) {
-		if ((null == loc) || !loc.hasName()) {
-			return Utility.errorLabel("Chart error: The given city has no name.");
-		}
-		if ((null == data) || data.isEmpty()) {
-			return Utility.errorLabel("Chart error: There is no data for the city " + loc.name() + ".");
-		}
+    /**
+     * Creates a simple chart with temperature and humidity data.
+     *
+     * @param loc the location / city
+     * @param data list of data points
+     * @return Returns a chart that displays temperature and humidity of the
+     * given location.
+     */
+    public static Component simple(Location loc, List<Weather> data) {
+        if ((null == loc) || !loc.hasName()) {
+            return Utility.errorLabel("Chart error: The given city has no name.");
+        }
+        if ((null == data) || data.isEmpty()) {
+            return Utility.errorLabel("Chart error: There is no data for the city " + loc.name() + ".");
+        }
 
-		Chart chart = new Chart();
-		Configuration conf = chart.getConfiguration();
-		conf.setTitle("Weather data for " + loc.name());
-		conf.getChart().setType(ChartType.LINE);
+        Chart chart = new Chart();
+        Configuration conf = chart.getConfiguration();
+        conf.setTitle("Weather data for " + loc.name());
+        conf.getChart().setType(ChartType.LINE);
 
-		conf.getTooltip().setFormatter(
-				"' ' + Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x) + '<br/>\' + this.series.name + ': <b>' + this.y + '</b>'");
+        conf.getTooltip().setFormatter(
+                "' ' + Highcharts.dateFormat('%Y-%m-%d %H:%M', this.x) + '<br/>\' + this.series.name + ': <b>' + this.y + '</b>'");
 
-		// X axis
-		conf.getxAxis().setType(AxisType.LINEAR);
-		conf.getxAxis().getLabels().setFormat("{value:%Y-%m-%d %H:%M}");
+        // X axis
+        conf.getxAxis().setType(AxisType.LINEAR);
+        conf.getxAxis().getLabels().setFormat("{value:%Y-%m-%d %H:%M}");
 
-		{
-			// Y axis for temperature
-			YAxis temperatureAxis = new YAxis();
-			temperatureAxis.setTitle("Temperature [°C]");
-			Style style = new Style();
-			style.setColor(SolidColor.RED);
-			temperatureAxis.getTitle().setStyle(style);
-			conf.addyAxis(temperatureAxis);
-		}
+        {
+            // Y axis for temperature
+            YAxis temperatureAxis = new YAxis();
+            temperatureAxis.setTitle("Temperature [°C]");
+            Style style = new Style();
+            style.setColor(SolidColor.RED);
+            temperatureAxis.getTitle().setStyle(style);
+            conf.addyAxis(temperatureAxis);
+        }
 
-		{
-			// Y axis for humidity
-			YAxis humidityAxis = new YAxis();
-			humidityAxis.setTitle("Humidity [%]");
-			humidityAxis.setOpposite(true);
-			Style style = new Style();
-			style.setColor(SolidColor.BLUE);
-			humidityAxis.getTitle().setStyle(style);
-			conf.addyAxis(humidityAxis);
-		}
+        {
+            // Y axis for humidity
+            YAxis humidityAxis = new YAxis();
+            humidityAxis.setTitle("Humidity [%]");
+            humidityAxis.setOpposite(true);
+            Style style = new Style();
+            style.setColor(SolidColor.BLUE);
+            humidityAxis.getTitle().setStyle(style);
+            conf.addyAxis(humidityAxis);
+        }
 
-		/*
-		 * { // Y axis for pressure YAxis axis = new YAxis();
-		 * axis.setTitle("Pressure [hPa]"); axis.setOpposite(true); Style style = new
-		 * Style(); style.setColor(SolidColor.GREEN); axis.getTitle().setStyle(style);
-		 * conf.addyAxis(axis); }
-		 */
+        DataSeries dataTemp = new DataSeries("Temperature");
+        DataSeries dataHum = new DataSeries("Humidity");
+        DataSeries dataRain = new DataSeries("Rain");
 
-		DataSeries dataTemp = new DataSeries("Temperature");
-		DataSeries dataHum = new DataSeries("Humidity");
-		DataSeries dataRain = new DataSeries("Rain");
-		// DataSeries dataPress = new DataSeries("Pressure");
+        for (Weather w : data) {
+            Instant wInstant = w.dataTime().toInstant();
+            dataTemp.add(new DataSeriesItem(wInstant, w.temperatureCelsius()));
+            dataHum.add(new DataSeriesItem(wInstant, w.humidity()));
+            if (w.hasRain()) {
+                dataRain.add(new DataSeriesItem(wInstant, w.rain()));
+            }
+        } // for
 
-		for (Weather w : data) {
-			Instant wInstant = w.dataTime().toInstant();
-			dataTemp.add(new DataSeriesItem(wInstant, w.temperatureCelsius()));
-			dataHum.add(new DataSeriesItem(wInstant, w.humidity()));
-			if (w.hasRain())
-				dataRain.add(new DataSeriesItem(wInstant, w.rain()));
-			// dataPress.add(new DataSeriesItem(w.dataTime().toInstant(), w.pressure()));
-		} // for
+        dataTemp.setyAxis(0);
+        {
+            // set same color as temperature axis (red) for data
+            PlotOptionsLine tempOpts = new PlotOptionsLine();
+            tempOpts.setColor(SolidColor.RED);
+            dataTemp.setPlotOptions(tempOpts);
+        }
 
-		dataTemp.setyAxis(0);
-		{
-			// set same color as temperature axis (red) for data
-			PlotOptionsLine tempOpts = new PlotOptionsLine();
-			tempOpts.setColor(SolidColor.RED);
-			dataTemp.setPlotOptions(tempOpts);
-		}
+        dataHum.setyAxis(1);
+        {
+            // set same color as humidity axis (blue) for data
+            PlotOptionsSpline humOpts = new PlotOptionsSpline();
+            humOpts.setColor(SolidColor.BLUE);
+            dataHum.setPlotOptions(humOpts);
+        }
 
-		dataHum.setyAxis(1);
-		{
-			// set same color as humidity axis (blue) for data
-			PlotOptionsSpline humOpts = new PlotOptionsSpline();
-			humOpts.setColor(SolidColor.BLUE);
-			dataHum.setPlotOptions(humOpts);
-		}
+        if (dataRain.size() > 1) {
+            // Y axis for rain
+            YAxis rainAxis = new YAxis();
+            rainAxis.setTitle("Rain [mm]");
+            rainAxis.setOpposite(true);
+            Style style = new Style();
+            style.setColor(SolidColor.LIGHTBLUE);
+            rainAxis.getTitle().setStyle(style);
+            conf.addyAxis(rainAxis);
 
-		if (dataRain.size() > 1) {
-			// Y axis for rain
-			YAxis rainAxis = new YAxis();
-			rainAxis.setTitle("Rain [mm]");
-			rainAxis.setOpposite(true);
-			Style style = new Style();
-			style.setColor(SolidColor.LIGHTBLUE);
-			rainAxis.getTitle().setStyle(style);
-			conf.addyAxis(rainAxis);
+            dataRain.setyAxis(2);
+            PlotOptionsColumn rainOpts = new PlotOptionsColumn();
+            rainOpts.setColor(SolidColor.LIGHTBLUE);
+            dataRain.setPlotOptions(rainOpts);
 
-			dataRain.setyAxis(2);
-			PlotOptionsColumn rainOpts = new PlotOptionsColumn();
-			rainOpts.setColor(SolidColor.LIGHTBLUE);
-			dataRain.setPlotOptions(rainOpts);
+            conf.addSeries(dataRain);
+        } // if there is rain data
 
-			conf.addSeries(dataRain);
-		} // if there is rain data
+        conf.addSeries(dataTemp);
+        conf.addSeries(dataHum);
 
-		/*
-		 * dataPress.setyAxis(2); { //set same color as pressure axis (green) for data
-		 * PlotOptionsSpline pressureOpts = new PlotOptionsSpline();
-		 * pressureOpts.setColor(SolidColor.GREEN);
-		 * dataPress.setPlotOptions(pressureOpts); }
-		 */
-
-		conf.addSeries(dataTemp);
-		conf.addSeries(dataHum);
-		// conf.addSeries(dataPress);
-
-		return chart;
-	}
+        return chart;
+    }
 
 }
