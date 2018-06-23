@@ -15,24 +15,6 @@ It will visualize any data that was collected.
 
 ## Setting up the application
 
-### Prerequisite: Vaadin Charts trial license
-
-This application uses [Vaadin Charts](https://vaadin.com/charts) for data
-visualization, and therefore you need a Vaadin Charts license to build this
-application. Do not worry, you can get a free trial license from the official
-Vaadin website. A trial license is valid for 30 days.
-
-After registering on the Vaadin website you can download a license file for
-Vaadin Charts, containing the trial license key. Just place the license file as
-`vaadin.charts.developer.license` in your home directory and you are ready to
-go.
-
-Without such a license the build step (i.e. `mvn install`, see below) will fail.
-
-There _might_ be a version of this application which will work without Vaadin
-Charts in the future (something like d3.js is a possible replacement here),
-but do not expect this soon.
-
 ### Native setup (Linux)
 
 Besides the checkout of the source code you need some prerequisites to build
@@ -41,7 +23,7 @@ the application. It basically boils down to:
 * JDK 8 or later (Both OpenJDK 8 or Oracle JDK 8 will do.)
 * Maven (the build tool)
 * MySQL Connector/J
-* Jetty (or Tomcat) server to deploy the generated *.war file
+* Jetty (or Tomcat, or Glassfish) server to deploy the generated *.war file
 
 These can usually be installed by typing
 
@@ -117,22 +99,6 @@ into a terminal in order to check whether he/she can execute docker commands in
 his/her user context. If the command displays an error, then something is not
 quite right yet.
 
-#### Adjust Vaadin Charts license information
-
-This application uses [Vaadin Charts](https://vaadin.com/charts) for data
-visualization, and therefore you need a Vaadin Charts license to build this
-application. Do not worry, you can get a free trial license from the official
-Vaadin website. This trial license is valid for 30 days.
-
-In order to build the application in a docker container, you need to adjust the
-line
-
-    ENV VAADIN_LICENSE 01234567-89ab-cdef-0123-456789abcdef
-
-in the Dockerfile and replace `01234567-89ab-cdef-0123-456789abcdef` with a
-valid trial license key. Otherwise the web interface won't build. (The step
-where it does `mvn install` will fail.)
-
 #### Let's party: Build docker image and create container
 
 The following commands have to be issued in the root directory of the checked
@@ -160,7 +126,7 @@ That is the whole point of the webinterface - to show data that was gathered by
 
 ## Copyright and Licensing
 
-Copyright 2017  Dirk Stolle
+Copyright 2017, 2018  Dirk Stolle
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
