@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the weather information collector webinterface.
-    Copyright (C) 2017  Dirk Stolle
+    Copyright (C) 2017, 2018  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Component;
@@ -37,11 +36,9 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import io.github.striezel.weather_information_collector.webinterface.data.Location;
-import io.github.striezel.weather_information_collector.webinterface.data.Weather;
 import io.github.striezel.weather_information_collector.webinterface.db.ConnectionInformation;
 import io.github.striezel.weather_information_collector.webinterface.db.Loader;
 import io.github.striezel.weather_information_collector.webinterface.db.SourceMySQL;
-import io.github.striezel.weather_information_collector.webinterface.graph.Generator;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser
@@ -113,7 +110,7 @@ public class wicUI extends UI {
     }
 
     private void updateGraph() {
-        graph = graphComponent();
+        graph = new GraphComponent(selectedLocation, connInfo);
     }
 
     private void createLayout() {
@@ -133,36 +130,6 @@ public class wicUI extends UI {
         layout.addComponent(hl);
 
         setContent(layout);
-    }
-
-    /**
-     * Provides a component that contains the graphical visualization of the
-     * data.
-     *
-     * @return Returns a component for graphical visualization.
-     */
-    private Component graphComponent() {
-        if (null == selectedLocation) {
-            VerticalLayout layout = new VerticalLayout();
-
-            Label l1 = new Label("Please select a location from the list on the left.");
-            l1.setIcon(VaadinIcons.LIST_SELECT);
-            l1.setCaption("No city has been selected.");
-
-            layout.addComponents(l1);
-            return layout;
-        } else {
-            if (null == connInfo) {
-                return Utility.errorLabel("Could not find or load configuration file!");
-            }
-
-            SourceMySQL src = new SourceMySQL(connInfo);
-            List<Weather> data = src.fetchData(selectedLocation);
-            if (null == data) {
-                return Utility.errorLabel("Could not load data for " + selectedLocation.name() + " from database!");
-            }
-            return Generator.simple(selectedLocation, data);
-        }
     }
 
     /**
