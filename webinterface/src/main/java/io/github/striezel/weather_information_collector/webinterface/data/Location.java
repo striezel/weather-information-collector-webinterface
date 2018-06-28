@@ -62,7 +62,7 @@ public class Location {
         if (newId > 0) {
             m_id = newId;
         } else {
-            newId = 0;
+            m_id = 0;
         }
     }
 
@@ -183,6 +183,30 @@ public class Location {
      */
     public boolean empty() {
         return (!hasId() && !hasName() && !hasCoordinates() && !hasPostcode());
+    }
+
+    @Override
+    public String toString() {
+        if (empty()) {
+            return "<Location is empty>";
+        }
+        if (hasName()) {
+            if (hasCoordinates()) {
+                return name() + " (" + String.valueOf(latitude()) + "°, "
+                        + String.valueOf(longitude()) + "°)";
+            }
+            // name only
+            return name();
+        }
+        if (hasCoordinates()) {
+            return String.valueOf(latitude()) + "°, "
+                    + String.valueOf(longitude()) + "°";
+        }
+        if (hasId()) {
+            return "ID " + String.valueOf(id());
+        }
+        // Postcode? Nah!
+        return "unknown location";
     }
 
 }

@@ -29,10 +29,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
@@ -112,10 +114,71 @@ public class SourceMySQL {
     }
 
     /**
+     * Lists all named locations together with the APIs from which data for that
+     * locations are present in the database.
+     *
+     * @return Returns a list of locations in case of success. Returns null, if
+     * an error occurred.
+     */
+    public List<AbstractMap.SimpleImmutableEntry<Location, RestApi>> listLocationsWithApi() {
+        if (null == source || null == knownApis) {
+            return null;
+        }
+        Connection conn;
+        try {
+            conn = source.getConnection();
+            Statement stmt = conn.createStatement();
+            stmt.setQueryTimeout(10);
+            if (!stmt.execute("SELECT DISTINCT location.name AS locName, latitude, longitude, api.name AS apiName, api.apiID AS theApiId"
+                    + " FROM weatherdata"
+                    + " LEFT JOIN api ON weatherdata.apiID = api.apiID"
+                    + " LEFT JOIN location ON location.locationID = weatherdata.locationID"
+                    + " WHERE NOT ISNULL(location.name)"
+                    + "   AND NOT ISNULL(api.name)"
+                    + " ORDER BY locName ASC, apiName ASC;")) {
+                return null;
+            }
+            ResultSet res = stmt.getResultSet();
+            List<AbstractMap.SimpleImmutableEntry<Location, RestApi>> locations;
+            locations = new ArrayList<>();
+            while (res.next()) {
+                Location loc = new Location();
+                loc.setName(res.getString("locName"));
+                Float lat = res.getFloat("latitude");
+                if (!res.wasNull()) {
+                    Float lon = res.getFloat("longitude");
+                    if (!res.wasNull()) {
+                        loc.setCoordinates(lat, lon);
+                    }
+                }
+
+                final int apiId = res.getInt("theApiId");
+                final Optional<RestApi> api = knownApis.entrySet().stream()
+                        .filter(e -> (e.getValue() == apiId))
+                        .map(e -> e.getKey())
+                        .findFirst();
+                if (api.isPresent()) {
+                    locations.add(
+                            new AbstractMap.SimpleImmutableEntry<>(loc, api.get())
+                    );
+                }
+            } // while
+            res.close();
+            stmt.close();
+            conn.close();
+            return locations;
+        } catch (SQLException e) {
+            LOG.log(Level.WARNING, "Could not get list of locations from the database!", e);
+            return null;
+        }
+    }
+
+    /**
      * Lists all APIs that are present in the database.
      *
-     * @return Returns a map where key is the API itself and the corresponding value
-     * is the id of the API within the database. Returns null, if an error occurred.
+     * @return Returns a map where key is the API itself and the corresponding
+     * value is the id of the API within the database. Returns null, if an error
+     * occurred.
      */
     private Map<RestApi, Integer> listApis() {
         if (null == source) {
@@ -136,10 +199,10 @@ public class SourceMySQL {
                 final String name = res.getString("name");
                 switch (name.toLowerCase()) {
                     case "apixu":
-                        apis.put(RestApi.Apixu,res.getInt("apiID"));
+                        apis.put(RestApi.Apixu, res.getInt("apiID"));
                         break;
                     case "darksky":
-                        apis.put(RestApi.DarkSky,res.getInt("apiID"));
+                        apis.put(RestApi.DarkSky, res.getInt("apiID"));
                         break;
                     case "openweathermap":
                         apis.put(RestApi.OpenWeatherMap, res.getInt("apiID"));
