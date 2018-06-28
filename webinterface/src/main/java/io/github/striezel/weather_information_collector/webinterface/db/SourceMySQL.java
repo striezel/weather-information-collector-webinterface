@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the weather information collector webinterface.
-    Copyright (C) 2017  Dirk Stolle
+    Copyright (C) 2017, 2018  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ package io.github.striezel.weather_information_collector.webinterface.db;
 
 import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
 import io.github.striezel.weather_information_collector.webinterface.data.Location;
+import io.github.striezel.weather_information_collector.webinterface.data.RestApi;
 import io.github.striezel.weather_information_collector.webinterface.data.Weather;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,7 +30,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 /**
@@ -39,8 +44,11 @@ import javax.sql.DataSource;
  */
 public class SourceMySQL {
 
+    private static final Logger LOG = Logger.getLogger(SourceMySQL.class.getName());
+
     private final ConnectionInformation connInfo;
     private final DataSource source;
+    private final Map<RestApi, Integer> knownApis;
 
     /**
      * Constructor.
@@ -50,22 +58,22 @@ public class SourceMySQL {
     public SourceMySQL(ConnectionInformation ci) {
         connInfo = ci;
         source = getMySQLDataSource();
+        knownApis = listApis();
     }
 
     private DataSource getMySQLDataSource() {
-        MysqlDataSource ds = null;
         try {
-            ds = new MysqlDataSource();
+            MysqlDataSource ds = new MysqlDataSource();
             // general URL syntax: "jdbc:mysql://hostname:port/databasename"
             ds.setURL("jdbc:mysql://" + connInfo.hostname() + ":" + String.valueOf(connInfo.port()) + "/"
                     + connInfo.db());
             ds.setUser(connInfo.user());
             ds.setPassword(connInfo.password());
+            return ds;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "Could not create data source for MySQL database.", e);
             return null;
         }
-        return ds;
     }
 
     /**
@@ -98,22 +106,76 @@ public class SourceMySQL {
             conn.close();
             return locations;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "Could not get list of locations from the database!", e);
             return null;
         }
     }
 
     /**
-     * Gets all available weather data for a location.
+     * Lists all APIs that are present in the database.
+     *
+     * @return Returns a map where key is the API itself and the corresponding value
+     * is the id of the API within the database. Returns null, if an error occurred.
+     */
+    private Map<RestApi, Integer> listApis() {
+        if (null == source) {
+            return null;
+        }
+        Connection conn;
+        try {
+            conn = source.getConnection();
+            Statement stmt = conn.createStatement();
+            stmt.setQueryTimeout(10);
+            if (!stmt.execute("SELECT * FROM api WHERE NOT ISNULL(name) ORDER BY name ASC;")) {
+                return null;
+            }
+            ResultSet res = stmt.getResultSet();
+            Map<RestApi, Integer> apis;
+            apis = new HashMap<>();
+            while (res.next()) {
+                final String name = res.getString("name");
+                switch (name.toLowerCase()) {
+                    case "apixu":
+                        apis.put(RestApi.Apixu,res.getInt("apiID"));
+                        break;
+                    case "darksky":
+                        apis.put(RestApi.DarkSky,res.getInt("apiID"));
+                        break;
+                    case "openweathermap":
+                        apis.put(RestApi.OpenWeatherMap, res.getInt("apiID"));
+                        break;
+                    default:
+                        LOG.log(Level.WARNING, "Could not find suitable API enumeration value for {0} - going to ignore it!", name);
+                        break;
+                }
+            } // while
+            res.close();
+            stmt.close();
+            conn.close();
+            return apis;
+        } catch (SQLException e) {
+            LOG.log(Level.WARNING, "Could not execute SQL query to get APIs!", e);
+            return null;
+        }
+    }
+
+    /**
+     * Gets all available weather data collected for a location under a given
+     * API.
      *
      * @param loc the location
+     * @param api the API
      * @return Returns a list of weather data in case of success. Returns null,
      * if an error occurred.
      */
-    public List<Weather> fetchData(Location loc) {
-        if ((null == loc) || !loc.hasName()) {
+    public List<Weather> fetchData(Location loc, RestApi api) {
+        if ((null == loc) || !loc.hasName() || api == null) {
             return null;
         }
+        if (knownApis == null || !knownApis.containsKey(api)) {
+            return null;
+        }
+        final Integer apiId = knownApis.get(api);
 
         Connection conn;
         try {
@@ -137,8 +199,9 @@ public class SourceMySQL {
             stmt.close();
             stmt = conn.prepareStatement(
                     "SELECT DISTINCT dataTime, temperature_C, humidity, rain, pressure FROM weatherdata"
-                    + " WHERE locationID = ? AND apiID = 2 ORDER BY dataTime ASC");
+                    + " WHERE locationID = ? AND apiID = ? ORDER BY dataTime ASC");
             stmt.setInt(1, locationId);
+            stmt.setInt(2, apiId);
             if (!stmt.execute()) {
                 return null;
             }
@@ -180,7 +243,7 @@ public class SourceMySQL {
 
             return data;
         } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.log(Level.WARNING, "Could not fetch weather data for the location " + loc.name() + "!", e);
             return null;
         }
     }

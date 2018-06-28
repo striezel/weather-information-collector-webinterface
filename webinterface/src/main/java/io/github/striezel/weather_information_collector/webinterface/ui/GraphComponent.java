@@ -23,6 +23,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import io.github.striezel.weather_information_collector.webinterface.data.Location;
+import io.github.striezel.weather_information_collector.webinterface.data.RestApi;
 import io.github.striezel.weather_information_collector.webinterface.data.Weather;
 import io.github.striezel.weather_information_collector.webinterface.db.ConnectionInformation;
 import io.github.striezel.weather_information_collector.webinterface.db.SourceMySQL;
@@ -60,7 +61,7 @@ public class GraphComponent extends VerticalLayout {
             }
 
             SourceMySQL src = new SourceMySQL(connInfo);
-            List<Weather> data = src.fetchData(selectedLocation);
+            List<Weather> data = src.fetchData(selectedLocation, RestApi.OpenWeatherMap);
             if (null == data) {
                 addComponent(Utility.errorLabel("Could not load data for " + selectedLocation.name() + " from database!"));
                 return;
