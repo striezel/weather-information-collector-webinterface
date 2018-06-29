@@ -41,13 +41,14 @@ public class GraphComponent extends VerticalLayout {
      * Constructs a component including a weather plot.
      *
      * @param selectedLocation the current location
+     * @param api the API whose data shall be displayed
      * @param connInfo database connection information
      */
-    public GraphComponent(Location selectedLocation, ConnectionInformation connInfo) {
-        initComponents(selectedLocation, connInfo);
+    public GraphComponent(Location selectedLocation, RestApi api, ConnectionInformation connInfo) {
+        initComponents(selectedLocation, api, connInfo);
     }
 
-    private void initComponents(Location selectedLocation, ConnectionInformation connInfo) {
+    private void initComponents(Location selectedLocation, RestApi api, ConnectionInformation connInfo) {
         if (null == selectedLocation) {
             Label l1 = new Label("Please select a location from the list on the left.");
             l1.setIcon(VaadinIcons.LIST_SELECT);
@@ -59,9 +60,12 @@ public class GraphComponent extends VerticalLayout {
                 addComponent(Utility.errorLabel("Could not find or load configuration file!"));
                 return;
             }
-
+            if (api == null) {
+                addComponent(Utility.errorLabel("API is null!"));
+                return;
+            }
             SourceMySQL src = new SourceMySQL(connInfo);
-            List<Weather> data = src.fetchData(selectedLocation, RestApi.OpenWeatherMap);
+            List<Weather> data = src.fetchData(selectedLocation, api);
             if (null == data) {
                 addComponent(Utility.errorLabel("Could not load data for " + selectedLocation.name() + " from database!"));
                 return;

@@ -37,10 +37,23 @@ import java.util.Optional;
  */
 public class LocationComponent extends HorizontalLayout {
 
+    private final List<LocationChangeListener> listeners;
+
+    /**
+     * Constructor.
+     *
+     * @param connInfo database connection information
+     */
     public LocationComponent(ConnectionInformation connInfo) {
+        listeners = new ArrayList<>();
         init(connInfo);
     }
 
+    /**
+     * Initializes the component showing the locations.
+     *
+     * @param connInfo database connection information
+     */
     private void init(ConnectionInformation connInfo) {
         if (null == connInfo) {
             addComponent(Utility.errorLabel("Could not find or load configuration file!"));
@@ -71,14 +84,34 @@ public class LocationComponent extends HorizontalLayout {
         grid.addSelectionListener((event) -> {
             Optional<AbstractMap.SimpleImmutableEntry<Location, RestApi>> item = (Optional<AbstractMap.SimpleImmutableEntry<Location, RestApi>>) event.getFirstSelectedItem();
             if (item.isPresent()) {
-
-                Notification.show("City changed:", item.get().getKey().name()
-                        + ", " + item.get().getValue().name(),
+                final Location newLocation = item.get().getKey();
+                final RestApi newApi = item.get().getValue();
+                Notification.show("City changed:", newLocation.name()
+                        + ", " + newApi.name(),
                         Notification.Type.TRAY_NOTIFICATION);
-                // TODO: listener etc.
+                // notify listeners
+                listeners.forEach((l) -> l.changed(newLocation, newApi));
             }
         });
         grid.setCaption("Locations");
         addComponent(grid);
+    }
+
+    /**
+     * Adds a listener that gets notified when the location changes.
+     *
+     * @param lcl the listener to add
+     */
+    public void addListener(LocationChangeListener lcl) {
+        listeners.add(lcl);
+    }
+
+    /**
+     * Removes a listener.
+     *
+     * @param lcl the listener to remove
+     */
+    public void removeListener(LocationChangeListener lcl) {
+        listeners.remove(lcl);
     }
 }

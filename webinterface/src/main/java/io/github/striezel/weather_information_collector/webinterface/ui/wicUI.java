@@ -19,8 +19,6 @@
  */
 package io.github.striezel.weather_information_collector.webinterface.ui;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
@@ -29,16 +27,13 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.ListSelect;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import io.github.striezel.weather_information_collector.webinterface.data.Location;
+import io.github.striezel.weather_information_collector.webinterface.data.RestApi;
 import io.github.striezel.weather_information_collector.webinterface.db.ConnectionInformation;
 import io.github.striezel.weather_information_collector.webinterface.db.Loader;
-import io.github.striezel.weather_information_collector.webinterface.db.SourceMySQL;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser
@@ -50,67 +45,28 @@ import io.github.striezel.weather_information_collector.webinterface.db.SourceMy
  * initialize non-component functionality.
  */
 @Theme("wictheme")
-public class wicUI extends UI {
+public class wicUI extends UI implements LocationChangeListener {
 
     private static final long serialVersionUID = -1848954295477812552L;
 
     private ConnectionInformation connInfo = null;
-    private Location selectedLocation = null;
-    private List<Location> availableLocations = null;
 
     private Component graph = null;
-
-    /**
-     * Loads available locations from the database.
-     */
-    private void loadAvailableLocations() {
-        if (null == connInfo) {
-            availableLocations = null;
-            return;
-        }
-        SourceMySQL src = new SourceMySQL(connInfo);
-        availableLocations = src.listLocations();
-    }
-
-    /**
-     * Finds a location by name.
-     *
-     * @param name the name of the location
-     * @return Returns the first matching location, if successful. Returns null,
-     * if no location was found.
-     */
-    private Location findLocationByName(String name) {
-        if ((null == name) || name.isEmpty()) {
-            return null;
-        }
-        if (availableLocations == null) {
-            return null;
-        }
-        // Remove square brackets, if they are present.
-        if (name.startsWith("[") && name.endsWith("]")) {
-            name = name.substring(1, name.length() - 1);
-        }
-        for (Location loc : availableLocations) {
-            if (loc.name().equals(name)) {
-                return loc;
-            }
-        } // for
-
-        // No matching location was found.
-        return null;
-    }
+    private LocationComponent locations = null;
 
     @Override
     protected void init(VaadinRequest vaadinRequest) {
         connInfo = Loader.load();
-        loadAvailableLocations();
+        locations = new LocationComponent(connInfo);
 
-        updateGraph();
+        updateGraph(null, null);
         createLayout();
+
+        locations.addListener(this);
     }
 
-    private void updateGraph() {
-        graph = new GraphComponent(selectedLocation, connInfo);
+    private void updateGraph(Location selectedLocation, RestApi api) {
+        graph = new GraphComponent(selectedLocation, api, connInfo);
     }
 
     private void createLayout() {
@@ -123,7 +79,7 @@ public class wicUI extends UI {
 
         HorizontalLayout hl = new HorizontalLayout();
         // add location list
-        hl.addComponent(locationComponent());
+        hl.addComponent(locations);
         // add graph
         hl.addComponent(graph);
         // add it all to layout
@@ -132,41 +88,10 @@ public class wicUI extends UI {
         setContent(layout);
     }
 
-    /**
-     * Provides a component that contains all location names.
-     *
-     * @return Returns a component with all location names.
-     */
-    private Component locationComponent() {
-        if (null == connInfo) {
-            return Utility.errorLabel("Could not find or load configuration file!");
-        }
-
-        SourceMySQL src = new SourceMySQL(connInfo);
-        List<Location> locations = src.listLocations();
-        if (null == locations) {
-            return Utility.errorLabel("Could not load list of locations from database!");
-        }
-        if (locations.isEmpty()) {
-            return Utility.errorLabel("There are no locations in the database yet.");
-        }
-        ListSelect<String> list = new ListSelect<>();
-        List<String> names = new ArrayList<>(locations.size());
-        locations.stream().forEach((l) -> {
-            names.add(l.name());
-        });
-        list.setItems(names);
-
-        list.addSelectionListener(event -> {
-            Notification.show("City changed:", String.valueOf(event.getNewSelection()), Type.TRAY_NOTIFICATION);
-            if (!event.getOldSelection().toString().equals(event.getNewSelection().toString())) {
-                selectedLocation = this.findLocationByName(String.valueOf(event.getNewSelection()));
-                updateGraph();
-                createLayout();
-            }
-        });
-        list.setCaption("Location:");
-        return list;
+    @Override
+    public void changed(Location location, RestApi api) {
+        updateGraph(location, api);
+        createLayout();
     }
 
     @WebServlet(urlPatterns = "/*", name = "wicUIServlet", asyncSupported = true)
