@@ -22,6 +22,7 @@ package io.github.striezel.weather_information_collector.webinterface.plotly;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 import io.github.striezel.weather_information_collector.webinterface.data.Location;
+import io.github.striezel.weather_information_collector.webinterface.data.RestApi;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,19 +41,28 @@ public final class SingleLocationSingleApiChart extends AbstractJavaScriptCompon
      * Constructor for a chart component that shows multiple time series.
      *
      * @param loc location for which the weather is shown
+     * @param api the API which provided the data
      * @param dates common dates for the weather data
      * @param temperature list of temperature values (in °C) for the dates
      * @param relHumidity list of relative humidity values (in %) for the dates
      */
     public SingleLocationSingleApiChart(final Location loc,
+            final RestApi api,
             final List<Timestamp> dates,
             final List<Double> temperature,
             final List<Integer> relHumidity) {
+        String plotTitle;
         if (loc != null && loc.hasName()) {
-            getState().title = "Weather data for " + loc.name();
+            plotTitle = "Weather data for " + loc.name();
+        } else if (loc != null) {
+            plotTitle = "Weather data for " + loc.toString();
         } else {
-            getState().title = "Weather data for unspecified location";
+            plotTitle = "Weather data for unknown location";
         }
+        if (null != api) {
+            plotTitle = plotTitle + ", data provided by " + api.name();
+        }
+        getState().title = plotTitle;
         if (dates != null && !dates.isEmpty()
                 && temperature != null && !temperature.isEmpty()
                 && relHumidity != null && !relHumidity.isEmpty()) {

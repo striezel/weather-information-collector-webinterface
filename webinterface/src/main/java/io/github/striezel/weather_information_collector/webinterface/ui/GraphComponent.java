@@ -70,7 +70,7 @@ public class GraphComponent extends VerticalLayout {
                 addComponent(Utility.errorLabel("Could not load data for " + selectedLocation.name() + " from database!"));
                 return;
             }
-            addComponent(Generator.simple(selectedLocation, data));
+            addComponent(Generator.simple(selectedLocation, api, data));
         }
     }
 }

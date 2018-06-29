@@ -21,6 +21,7 @@ package io.github.striezel.weather_information_collector.webinterface.graph;
 
 import com.vaadin.ui.Component;
 import io.github.striezel.weather_information_collector.webinterface.data.Location;
+import io.github.striezel.weather_information_collector.webinterface.data.RestApi;
 import io.github.striezel.weather_information_collector.webinterface.data.Weather;
 import io.github.striezel.weather_information_collector.webinterface.plotly.SingleLocationSingleApiChart;
 import io.github.striezel.weather_information_collector.webinterface.ui.Utility;
@@ -39,11 +40,12 @@ public class Generator {
      * Creates a simple chart with temperature and humidity data.
      *
      * @param loc the location / city
+     * @param api the API which provided the data
      * @param data list of data points
      * @return Returns a chart that displays temperature and humidity of the
      * given location.
      */
-    public static Component simple(Location loc, List<Weather> data) {
+    public static Component simple(Location loc, RestApi api, List<Weather> data) {
         if ((null == loc) || !loc.hasName()) {
             return Utility.errorLabel("Chart error: The given city has no name.");
         }
@@ -66,7 +68,7 @@ public class Generator {
             dataHum.add(w.humidity());
         } // for
         Component chart = new SingleLocationSingleApiChart(
-                loc, dates, dataTemp, dataHum);
+                loc, api, dates, dataTemp, dataHum);
         // TODO: axis for rain, light blue
         return chart;
     }
