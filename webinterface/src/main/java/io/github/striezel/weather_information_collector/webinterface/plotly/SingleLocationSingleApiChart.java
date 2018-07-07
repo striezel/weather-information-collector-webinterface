@@ -53,11 +53,11 @@ public final class SingleLocationSingleApiChart extends AbstractJavaScriptCompon
             final List<Integer> relHumidity) {
         String plotTitle;
         if (loc != null && loc.hasName()) {
-            plotTitle = "Weather data for " + loc.name();
+            plotTitle = "Weather for " + loc.name();
         } else if (loc != null) {
-            plotTitle = "Weather data for " + loc.toString();
+            plotTitle = "Weather for " + loc.toString();
         } else {
-            plotTitle = "Weather data for unknown location";
+            plotTitle = "Weather for unknown location";
         }
         if (null != api) {
             plotTitle = plotTitle + ", data provided by " + api.name();
