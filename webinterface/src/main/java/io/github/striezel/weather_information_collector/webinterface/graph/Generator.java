@@ -42,10 +42,11 @@ public class Generator {
      * @param loc the location / city
      * @param api the API which provided the data
      * @param data list of data points
+     * @param showGap whether to show gaps in the data as such
      * @return Returns a chart that displays temperature and humidity of the
      * given location.
      */
-    public static Component simple(Location loc, RestApi api, List<Weather> data) {
+    public static Component simple(Location loc, RestApi api, List<Weather> data, boolean showGap) {
         if ((null == loc) || !loc.hasName()) {
             return Utility.errorLabel("Chart error: The given city has no name.");
         }
@@ -62,7 +63,22 @@ public class Generator {
         final List<Integer> dataHum = new ArrayList<>(data.size());
         // TODO: add rain data
         final List<Timestamp> dates = new ArrayList<>(data.size());
+        Timestamp previous = !data.isEmpty() ? data.get(0).dataTime() : null;
+        // Limit: 12 hours + 16 seconds
+        final long limit = 1000 * 3600 * 12 + 15000;
         for (Weather w : data) {
+            if (showGap) {
+                // If there is a gap greater than the limit in the data, add a null
+                // data point so that the gap shows in the Plotly graph.
+                long diffMilliseconds = w.dataTime().getTime() - previous.getTime();
+                if (diffMilliseconds > limit) {
+                    // Add data point with null values halfway between both data points.
+                    dates.add(new Timestamp(previous.getTime() + (diffMilliseconds / 2)));
+                    dataTemp.add(null);
+                    dataHum.add(null);
+                }
+                previous = w.dataTime();
+            } // if showGap
             dates.add(w.dataTime());
             dataTemp.add((double) w.temperatureCelsius());
             dataHum.add(w.humidity());
