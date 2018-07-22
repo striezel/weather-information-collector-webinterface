@@ -64,8 +64,8 @@ public class Generator {
         // TODO: add rain data
         final List<Timestamp> dates = new ArrayList<>(data.size());
         Timestamp previous = !data.isEmpty() ? data.get(0).dataTime() : null;
-        // Limit: 12 hours + 16 seconds
-        final long limit = 1000 * 3600 * 12 + 15000;
+        // Limit: 6 hours + 15 seconds
+        final long limit = 1000 * 3600 * 6 + 15000;
         for (Weather w : data) {
             if (showGap) {
                 // If there is a gap greater than the limit in the data, add a null
