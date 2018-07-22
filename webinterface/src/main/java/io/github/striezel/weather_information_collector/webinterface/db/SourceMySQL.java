@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -223,6 +224,40 @@ public class SourceMySQL {
     }
 
     /**
+     * Gets the internal database id of a given location.
+     *
+     * @param conn an open connection to the database
+     * @param loc the location to look for
+     * @return Returns the id of the location, if it was found. Returns -1, if
+     * the location was not found or an error occurred.
+     * @throws SQLException if the SQL query failed or the connection is closed
+     */
+    private int getLocationId(Connection conn, Location loc) throws SQLException {
+        if ((conn == null) || (null == loc) || !loc.hasName()) {
+            return -1;
+        }
+        if (conn.isClosed()) {
+            return -1;
+        }
+        int locationId;
+        try (PreparedStatement stmt = conn.prepareStatement("SELECT * FROM location WHERE name = ? LIMIT 1;")) {
+            stmt.setQueryTimeout(10);
+            stmt.setString(1, loc.name());
+            if (!stmt.execute()) {
+                return -1;
+            }
+            ResultSet res = stmt.getResultSet();
+            locationId = -1;
+            if (res.next()) {
+                locationId = res.getInt("locationID");
+            }
+            res.close();
+            stmt.close();
+        }
+        return locationId;
+    }
+
+    /**
      * Gets all available weather data collected for a location under a given
      * API.
      *
@@ -243,29 +278,126 @@ public class SourceMySQL {
         Connection conn;
         try {
             conn = source.getConnection();
-            PreparedStatement stmt = conn.prepareStatement("SELECT * FROM location WHERE name = ? LIMIT 1;");
-            stmt.setQueryTimeout(10);
-            stmt.setString(1, loc.name());
-            if (!stmt.execute()) {
-                return null;
-            }
-            ResultSet res = stmt.getResultSet();
-            int locationId = -1;
-            if (res.next()) {
-                locationId = res.getInt("locationID");
-            } else {
-                stmt.close();
+            int locationId = this.getLocationId(conn, loc);
+            if (locationId < 0) {
                 conn.close();
                 return null;
             }
-            res.close();
-            stmt.close();
-            stmt = conn.prepareStatement(
+            PreparedStatement stmt = conn.prepareStatement(
                     "SELECT DISTINCT dataTime, temperature_C, humidity, rain, pressure FROM weatherdata"
                     + " WHERE locationID = ? AND apiID = ? ORDER BY dataTime ASC");
             stmt.setInt(1, locationId);
             stmt.setInt(2, apiId);
             if (!stmt.execute()) {
+                conn.close();
+                return null;
+            }
+            ResultSet res = stmt.getResultSet();
+            List<Weather> data = new ArrayList<>();
+            while (res.next()) {
+                Timestamp dt = res.getTimestamp("dataTime");
+                if (res.wasNull()) {
+                    dt = null;
+                }
+                float tempC = res.getFloat("temperature_C");
+                if (res.wasNull()) {
+                    tempC = Float.NaN;
+                }
+                int humidity = res.getInt("humidity");
+                if (res.wasNull()) {
+                    humidity = -1;
+                }
+                float rain = res.getFloat("rain");
+                if (res.wasNull()) {
+                    rain = Float.NaN;
+                }
+                int pressure = res.getInt("pressure");
+                if (res.wasNull()) {
+                    pressure = 0;
+                }
+
+                Weather w = new Weather();
+                w.setDataTime(dt);
+                w.setTemperatureCelsius(tempC);
+                w.setHumidity(humidity);
+                w.setRain(rain);
+                w.setPressure(pressure);
+                data.add(w);
+            } // while
+            res.close();
+            stmt.close();
+            conn.close();
+
+            return data;
+        } catch (SQLException e) {
+            LOG.log(Level.WARNING, "Could not fetch weather data for the location " + loc.name() + "!", e);
+            return null;
+        }
+    }
+
+    /**
+     * Gets the available weather data collected for a location under a given
+     * API for the last n hours.
+     *
+     * @param loc the location
+     * @param api the API
+     * @param hours number of hours (must be greater than zero)
+     * @return Returns a list of weather data in case of success. Returns null,
+     * if an error occurred.
+     */
+    public List<Weather> fetchDataNHours(Location loc, RestApi api, int hours) {
+        if ((null == loc) || !loc.hasName() || api == null || hours < 1) {
+            return null;
+        }
+        if (knownApis == null || !knownApis.containsKey(api)) {
+            return null;
+        }
+        final Integer apiId = knownApis.get(api);
+
+        Connection conn;
+        try {
+            conn = source.getConnection();
+            int locationId = getLocationId(conn, loc);
+            if (locationId < 0) {
+                conn.close();
+                return null;
+            }
+            // Find the latest date in the weather data.
+            PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT MAX(dataTime) AS mdt FROM weatherdata"
+                    + " WHERE locationID = ? AND apiID = ?;");
+            stmt.setInt(1, locationId);
+            stmt.setInt(2, apiId);
+            if (!stmt.execute()) {
+                conn.close();
+                return null;
+            }
+            ResultSet res = stmt.getResultSet();
+            final Timestamp maxDataTime;
+            if (res.next()) {
+                maxDataTime = res.getTimestamp("mdt");
+                if (res.wasNull()) {
+                    res.close();
+                    stmt.close();
+                    return null;
+                }
+            } else {
+                maxDataTime = Timestamp.from(Instant.now());
+            }
+            res.close();
+            stmt.close();
+            // Get the weather data.
+            stmt = conn.prepareStatement(
+                    "SELECT DISTINCT dataTime, temperature_C, humidity, rain, pressure FROM weatherdata"
+                    + " WHERE locationID = ? AND apiID = ?"
+                    + "  AND dataTime >= DATE_SUB(?, INTERVAL ? HOUR)"
+                    + " ORDER BY dataTime ASC");
+            stmt.setInt(1, locationId);
+            stmt.setInt(2, apiId);
+            stmt.setTimestamp(3, maxDataTime);
+            stmt.setInt(4, hours);
+            if (!stmt.execute()) {
+                conn.close();
                 return null;
             }
             res = stmt.getResultSet();

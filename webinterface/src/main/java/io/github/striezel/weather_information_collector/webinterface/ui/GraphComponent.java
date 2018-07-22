@@ -65,12 +65,13 @@ public class GraphComponent extends VerticalLayout {
                 return;
             }
             SourceMySQL src = new SourceMySQL(connInfo);
-            List<Weather> data = src.fetchData(selectedLocation, api);
+            final int maxHours = 48;
+            List<Weather> data = src.fetchDataNHours(selectedLocation, api, maxHours);
             if (null == data) {
                 addComponent(Utility.errorLabel("Could not load data for " + selectedLocation.name() + " from database!"));
                 return;
             }
-            addComponent(Generator.simple(selectedLocation, api, data, true));
+            addComponent(Generator.simpleNHours(selectedLocation, api, maxHours, data, true));
         }
     }
 }
