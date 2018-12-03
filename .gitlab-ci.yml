@@ -6,6 +6,7 @@ image: php:7.2-cli
 build:
   stage: build
   before_script: 
+    - if [[ -f /etc/apt/sources.list.d/buster.list ]]; then unlink /etc/apt/sources.list.d/buster.list; fi
     - apt-get update && apt-get -y install phpunit
   script: 
     - cd ./tests
