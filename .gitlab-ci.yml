@@ -1,0 +1,12 @@
+# Use the official php image, based on Debian 9.
+# It can use version tags as well, like php:7.2-cli.
+# See https://hub.docker.com/_/php/ for more info.
+image: php:7.2-cli
+
+build:
+  stage: build
+  before_script: 
+    - apt-get update && apt-get -y install phpunit
+  script: 
+    - cd ./tests
+    - ./test.sh
