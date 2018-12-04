@@ -6,7 +6,13 @@ image: php:7.2-cli
 build:
   stage: build
   before_script: 
+# The PHP guys who created that container messed up APT:
+# - They added a buster (to be Debian 10) repo to a Debian 9 container.
+# - The disallowed phpunit installation (among others) by adding APT preferences.
+#
+# Both of these have to be reversed, so we can install phpunit properly.
     - if [[ -f /etc/apt/sources.list.d/buster.list ]]; then unlink /etc/apt/sources.list.d/buster.list; fi
+    - if [[ -f /etc/apt/preferences.d/no-debian-php ]]; then unlink /etc/apt/preferences.d/no-debian-php; fi
     - apt-get update && apt-get -y install phpunit
   script: 
     - cd ./tests

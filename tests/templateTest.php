@@ -25,13 +25,13 @@ use PHPUnit\Framework\TestCase;
 
 final class TemplateTest extends TestCase
 {
-    public function testLoadTemplateFromFile(): void
+    public function testLoadTemplateFromFile()
     {
       $tpl = new template();
       $this->assertEquals(true, $tpl->fromFile('test.tpl'));
     }
 
-    public function testLoadTemplateSections(): void
+    public function testLoadTemplateSections()
     {
       $tpl = new template();
       $this->assertEquals(true, $tpl->fromFile('test.tpl'));
@@ -40,7 +40,7 @@ final class TemplateTest extends TestCase
       $this->assertEquals(true, $tpl->loadSection('three_times'));
     }
 
-    public function testGenerate1stSection(): void
+    public function testGenerate1stSection()
     {
       $tpl = new template();
       $this->assertEquals(true, $tpl->fromFile('test.tpl'));
@@ -50,7 +50,7 @@ final class TemplateTest extends TestCase
       $this->assertEquals('There is no tag here.', $generated);
     }
 
-    public function testGenerate2ndSection(): void
+    public function testGenerate2ndSection()
     {
       $tpl = new template();
       $this->assertEquals(true, $tpl->fromFile('test.tpl'));
@@ -61,7 +61,7 @@ final class TemplateTest extends TestCase
       $this->assertEquals($expected, $generated);
     }
 
-    public function testGenerate3rdSection(): void
+    public function testGenerate3rdSection()
     {
       $tpl = new template();
       $this->assertEquals(true, $tpl->fromFile('test.tpl'));
