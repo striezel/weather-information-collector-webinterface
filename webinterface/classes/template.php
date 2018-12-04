@@ -43,7 +43,7 @@ class template
    * @param fileName  name of the file to load
    * @return true, if template was loaded successfully; false otherwise
    */
-  public function fromFile(string $fileName)
+  public function fromFile($fileName)
   {
     if (!is_readable($fileName))
       return false;
