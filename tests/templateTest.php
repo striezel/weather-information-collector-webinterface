@@ -36,6 +36,7 @@ final class TemplateTest extends TestCase
       $this->assertEquals(true, $tpl->loadSection('uno'));
       $this->assertEquals(true, $tpl->loadSection('sec2'));
       $this->assertEquals(true, $tpl->loadSection('three_times'));
+      $this->assertEquals(true, $tpl->loadSection('with_inc'));
     }
 
     public function testGenerate1stSection()
@@ -72,6 +73,23 @@ final class TemplateTest extends TestCase
         ."  <li>Bangles<li>\n"
         ."  <li>Abba<li>\n"
         ."</ul>";
+      $this->assertEquals($expected, $generated);
+    }
+
+    public function testGenerate4thSection()
+    {
+      $tpl = new template();
+      $this->assertEquals(true, $tpl->fromFile('test.tpl'));
+      $this->assertEquals(true, $tpl->loadSection('with_inc'));
+      $tpl->tag('title', 'foo<bar>');
+      $tpl->include('body', '<body><pre>Test</pre></body>');
+      $generated = $tpl->generate();
+      $expected = "<head>\n"
+        // escaped HTML entities in title
+        ."  <title>foo&lt;bar&gt;</title>\n"
+        ."</head>\n"
+        // unescaped HTML in body, since it is an include
+        ."<body><pre>Test</pre></body>";
       $this->assertEquals($expected, $generated);
     }
 }

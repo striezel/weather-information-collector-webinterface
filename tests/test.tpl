@@ -9,3 +9,8 @@
   <li>{{b}}<li>
   <li>{{a}}<li>
 </ul><!--section-end::three_times-->
+
+<!--section-start::with_inc--><head>
+  <title>{{title}}</title>
+</head>
+{{>body}}<!--section-end::with_inc-->
