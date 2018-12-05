@@ -82,7 +82,7 @@ final class TemplateTest extends TestCase
       $this->assertEquals(true, $tpl->fromFile('test.tpl'));
       $this->assertEquals(true, $tpl->loadSection('with_inc'));
       $tpl->tag('title', 'foo<bar>');
-      $tpl->include('body', '<body><pre>Test</pre></body>');
+      $tpl->integrate('body', '<body><pre>Test</pre></body>');
       $generated = $tpl->generate();
       $expected = "<head>\n"
         // escaped HTML entities in title

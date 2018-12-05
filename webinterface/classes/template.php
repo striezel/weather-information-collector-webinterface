@@ -109,7 +109,7 @@ class template
    * @param name  name of the template to include
    * @param replacement the replacement
    */
-  public function include($name, $replacement)
+  public function integrate($name, $replacement)
   {
     $this->includes[$name] = $replacement;
   }

@@ -1,5 +1,6 @@
 <!--section-start::header-->  <head>
     <title>{{title}}</title>
+    <script src="{{jquery_path}}/jquery.min.js"></script>
     <link href="{{twbs_path}}/css/bootstrap.min.css" rel="stylesheet">
     <script src="{{twbs_path}}/js/bootstrap.min.js"></script>
   </head><!--section-end::header-->
