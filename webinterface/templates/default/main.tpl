@@ -26,21 +26,21 @@
         <span class="icon-bar"></span>
       </button>
       <span class="navbar-brand">
-        <span class="glyphicon glyphicon-plus"> </span>
+        <span class="glyphicon glyphicon-cloud"> </span>
         <strong>Weather information collector</strong>
       </span>
     </div>
 
     <div class="collapse navbar-collapse" id="bs-navbar-collapse-intro">
       <ul class="nav navbar-nav">
-        <li class="active">
+        <li>
           <a href="#" id="intro">
             <span class="glyphicon glyphicon-question-sign"> </span> Introduction
           </a>
         </li>
-        <li>
-          <a href="#">
-            <span class="glyphicon glyphicon-move"> </span> Foo
+        <li class="active">
+          <a href="./locations.php">
+            <span class="glyphicon glyphicon-home"> </span> Cities
           </a>
         </li>
         <li>

@@ -18,26 +18,5 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  -------------------------------------------------------------------------------
 */
-  include 'classes/template.php';
-
-  $base_tpl_path = __DIR__ . '/templates/default/';
-  $tpl = new template();
-  $tpl->fromFile($base_tpl_path . 'main.tpl');
-  $tpl->loadSection('header');
-  $tpl->tag('twbs_path', './libs/twbs/3.3.7');
-  $tpl->tag('jquery_path', './libs/jquery');
-  $tpl->tag('title', 'Work in progress');
-  $header = $tpl->generate();
-
-  $tpl->loadSection('navbar');
-  $content = $tpl->generate();
-
-  $tpl->loadSection('welcome');
-  $content = $content . $tpl->generate();
-
-  $tpl->loadSection('full');
-  $tpl->integrate('header', $header);
-  $tpl->integrate('content', $content);
-
-  echo $tpl->generate();
+  include 'locations.php';
 ?>
