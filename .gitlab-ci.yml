@@ -7,5 +7,6 @@ build:
   before_script: 
     - apt-get update && apt-get -y install phpunit
   script: 
+    - ./ci/phplint.sh
     - cd ./tests
     - ./test.sh

@@ -8,6 +8,7 @@ php:
 os:
 - linux
 script:
+- ./ci/phplint.sh
 - cd tests/
 - ./test.sh
 notifications:
