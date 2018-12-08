@@ -18,5 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  -------------------------------------------------------------------------------
 */
+
+  define('WIC_WEB_ROOT', __DIR__);
+
   include 'locations.php';
 ?>

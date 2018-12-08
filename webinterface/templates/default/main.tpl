@@ -9,9 +9,8 @@
 <html>
 {{>header}}
   <body>
-
+    {{>navbar}}
     {{>content}}
-
   </body>
 </html><!--section-end::full-->
 
@@ -45,7 +44,7 @@
         </li>
         <li>
           <a href="#">
-            <span class="glyphicon glyphicon-transfer"> </span> Bar
+            <span class="glyphicon glyphicon-transfer"> </span> Test
           </a>
         </li>
       </ul>

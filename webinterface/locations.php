@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  -------------------------------------------------------------------------------
 */
-  include 'classes/template.php';
+  include 'classes/templatehelper.php';
   include 'classes/database.php';
 
   $connInfo = configuration::connectionInfo();
@@ -30,10 +30,8 @@
   if (empty($locations))
     die("Could not get a list of locations!");
 
-  $base_tpl_path = __DIR__ . '/templates/default/';
-
   $tpl = new template();
-  $tpl->fromFile($base_tpl_path . 'locations.tpl');
+  $tpl->fromFile(templatehelper::baseTemplatePath() . 'locations.tpl');
   $tpl->loadSection('locationItem');
   $items = '';
   foreach ($locations as $loc) {
@@ -51,19 +49,7 @@
   $tpl->integrate('items', $items);
   $content = $tpl->generate();
 
-  $tpl->fromFile($base_tpl_path . 'main.tpl');
-  $tpl->loadSection('header');
-  $tpl->tag('twbs_path', './libs/twbs/3.3.7');
-  $tpl->tag('jquery_path', './libs/jquery');
-  $tpl->tag('title', 'Cities');
-  $header = $tpl->generate();
-
-  $tpl->loadSection('navbar');
-  $content = $tpl->generate() . $content;
-
-  $tpl->loadSection('full');
-  $tpl->integrate('header', $header);
-  $tpl->integrate('content', $content);
+  $tpl = templatehelper::prepareMain($content, 'Cities');
 
   echo $tpl->generate();
 ?>

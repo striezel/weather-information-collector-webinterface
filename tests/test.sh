@@ -3,7 +3,7 @@
 # Bash script to run the PHPUnit tests
 # (C) 2018  Dirk Stolle
 #
-# GPL v3+
+# License: GPL v3+
 
 phpunit --version
 if [[ $? -ne 0 ]]
@@ -14,4 +14,5 @@ then
   exit 1
 fi
 
-phpunit --bootstrap autoload.php templateTest.php
+# Run PHPUnit on all *Test.php files in the current directory.
+phpunit --bootstrap autoload.php ./
