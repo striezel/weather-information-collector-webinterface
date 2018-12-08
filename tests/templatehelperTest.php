@@ -33,10 +33,10 @@ final class TemplateHelperTest extends TestCase
       // Template path should end with 'templates/default/'.
       $this->assertStringEndsWith('templates/default/', $path);
       // Template directory should exist.
-      $this->assertDirectoryExists($path);
+      $this->assertTrue(file_exists($path) && is_dir($path));
       // Directory should contain a readable main.tpl.
       $this->assertFileExists($path . 'main.tpl');
-      $this->assertFileIsReadable($path . 'main.tpl');
+      $this->assertTrue(is_readable($path . 'main.tpl'));
     }
 
     public function testPrepareMain()
@@ -45,7 +45,7 @@ final class TemplateHelperTest extends TestCase
       // Template must not be null.
       $this->assertFalse($tpl == null);
       // Template should be an instance of template class.
-      $this->assertTrue($tpl instanceof template);
+      $this->assertInstanceOf(template::class, $tpl);
 
       // Now check the generated template.
       $code = $tpl->generate();
