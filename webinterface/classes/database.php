@@ -61,22 +61,21 @@ class database
   }
 
   /**
-   * Lists all named locations together with the APIs from which data for that
-   * locations are present in the database.
+   * Lists all named locations that have current weather data in the database.
    *
    * @return Returns an array of arrays containing location data.
    */
-  public function locationsWithApi()
+  public function locations()
   {
     if (null === $this->pdo)
       return null;
-    $sql = 'SELECT DISTINCT location.name AS locName, location.locationID AS locId, latitude, longitude, api.name AS apiName, api.apiID AS theApiId'
+    $sql = 'SELECT DISTINCT location.name AS locName, location.locationID AS locId, latitude, longitude'
          . ' FROM weatherdata'
          . ' LEFT JOIN api ON weatherdata.apiID = api.apiID'
          . ' LEFT JOIN location ON location.locationID = weatherdata.locationID'
          . ' WHERE NOT ISNULL(location.name)'
          . '   AND NOT ISNULL(api.name)'
-         . ' ORDER BY locName ASC, apiName ASC;';
+         . ' ORDER BY locName ASC;';
     $stmt = $this->pdo->query($sql);
     $data = array();
     while (false !== ($row = $stmt->fetch(PDO::FETCH_ASSOC)))
@@ -85,7 +84,38 @@ class database
         'location' => $row['locName'],
         'locationId' => $row['locId'],
         'latitude' => $row['latitude'],
-        'longitude' => $row['longitude'],
+        'longitude' => $row['longitude']
+      );
+    }
+    $stmt->closeCursor();
+    unset($stmt);
+    return $data;
+  }
+
+  /**
+   * Lists all APIs that have current weather data in the database for the given
+   * location.
+   *
+   * @param locationId  id of the location
+   * @return Returns an array of arrays containing location data.
+   */
+  public function apisOfLocation($locationId)
+  {
+    if (null === $this->pdo)
+      return null;
+    $locationId = intval($locationId);
+    $sql = 'SELECT DISTINCT api.apiID AS theApiId, api.name AS apiName'
+         . ' FROM api'
+         . ' LEFT JOIN weatherdata ON weatherdata.apiID = api.apiID'
+         . ' LEFT JOIN location ON location.locationID = weatherdata.locationID'
+         . ' WHERE NOT ISNULL(location.locationID)'
+         . '     AND location.locationID=' . $locationId
+         . ' ORDER BY api.name ASC;';
+    $stmt = $this->pdo->query($sql);
+    $data = array();
+    while (false !== ($row = $stmt->fetch(PDO::FETCH_ASSOC)))
+    {
+      $data[] = array(
         'api' => $row['apiName'],
         'apiId' => $row['theApiId']
       );

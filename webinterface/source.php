@@ -24,6 +24,13 @@
   include 'classes/templatehelper.php';
   include 'classes/database.php';
 
+  if (!isset($_GET['location']) || empty($_GET['location']))
+  {
+    echo templatehelper::error("No location has been selected.");
+    die();
+  }
+  $_GET['location'] = intval($_GET['location']);
+
   $connInfo = configuration::connectionInfo();
   if (empty($connInfo))
   {
@@ -33,32 +40,43 @@
   }
 
   $database = new database($connInfo);
-  $locations = $database->locations();
-  if (empty($locations))
+  $apis = $database->apisOfLocation($_GET['location']);
+  if (empty($apis))
   {
     header('HTTP/1.0 500 Internal Server Error', true, 500);
-    echo templatehelper::error("Could not get a list of locations!");
+    echo templatehelper::error("Could not get a list of data sources!");
     die();
   }
 
   $tpl = new template();
   $tpl->fromFile(templatehelper::baseTemplatePath() . 'locations.tpl');
-  $tpl->loadSection('locationItem');
+  $tpl->loadSection('sourceItem');
   $items = '';
-  foreach ($locations as $loc) {
-    $tpl->tag('name', $loc['location']);
-    $tpl->tag('locationId', $loc['locationId']);
-    if ($loc['latitude'] > 0.0) $tpl->tag('lat', $loc['latitude'] . '°N');
-    else $tpl->tag('lat', (-1.0*$loc['latitude']) . '°S');
-    if ($loc['longitude'] > 0.0) $tpl->tag('lon', $loc['longitude'] . '°E');
-    else $tpl->tag('lon', (-1.0*$loc['longitude']) . '°W');
+  foreach ($apis as $api) {
+    $tpl->tag('name', $api['api']);
+    $tpl->tag('apiId', $api['apiId']);
+    $tpl->tag('locationId', $_GET['location']);
     $items .= $tpl->generate();
   }
-  $tpl->loadSection('locationList');
+
+  $location = $database->locations();
+  function locationFilter($item)
+  {
+    return $item['locationId'] == $_GET['location'];
+  }
+  $location = array_filter($location, 'locationFilter');
+  $location = array_shift($location);
+
+  $tpl->loadSection('sourceList');
   $tpl->integrate('items', $items);
+  $tpl->tag('name', $location['location']);
+  if ($location['latitude'] > 0.0) $tpl->tag('lat', $location['latitude'] . '°N');
+  else $tpl->tag('lat', (-1.0*$location['latitude']) . '°S');
+  if ($location['longitude'] > 0.0) $tpl->tag('lon', $location['longitude'] . '°E');
+  else $tpl->tag('lon', (-1.0*$location['longitude']) . '°W');
   $content = $tpl->generate();
 
-  $tpl = templatehelper::prepareMain($content, 'Cities');
+  $tpl = templatehelper::prepareMain($content, 'Data sources');
 
   echo $tpl->generate();
 ?>

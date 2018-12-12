@@ -10,7 +10,9 @@
 {{>header}}
   <body>
     {{>navbar}}
+    <div class="container">
     {{>content}}
+    </div>
   </body>
 </html><!--section-end::full-->
 
@@ -39,7 +41,7 @@
         </li>
         <li class="active">
           <a href="./locations.php">
-            <span class="glyphicon glyphicon-home"> </span> Cities
+            <span class="glyphicon glyphicon-home"> </span> Locations
           </a>
         </li>
         <li>
