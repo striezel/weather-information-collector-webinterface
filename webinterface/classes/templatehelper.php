@@ -59,5 +59,23 @@ class templatehelper
 
     return $tpl;
   }
+
+  /**
+   * Generates the output for an error page.
+   *
+   * @param message the error message
+   * @return Returns a fully generated error page with the given message.
+   */
+  public static function error($message = '')
+  {
+    $tpl = new template();
+    $tpl->fromFile(templatehelper::baseTemplatePath() . 'main.tpl');
+    $tpl->loadSection('error');
+    $tpl->tag('message', $message);
+    $content = $tpl->generate();
+
+    $tpl = templatehelper::prepareMain($content, "Oops, something went wrong!");
+    return $tpl->generate();
+  }
 }
 ?>

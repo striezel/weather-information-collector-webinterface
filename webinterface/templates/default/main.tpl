@@ -53,8 +53,8 @@
 </nav>
 <!--section-end::navbar-->
 
-<!--section-start::welcome--><div class="col-xs-12" align="justify">
-    Welcome!
+<!--section-start::error--><div class="alert alert-danger" align="justify" role="alert">
+    <strong>An error occurred!</strong>
     <br /><br />
-    This application is not implemented yet. Come back later.
-</div><!--section-end::welcome-->
+    {{message}}
+</div><!--section-end::error-->

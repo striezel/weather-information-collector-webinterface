@@ -23,12 +23,20 @@
 
   $connInfo = configuration::connectionInfo();
   if (empty($connInfo))
-    die("Could not get connection information!");
+  {
+    header('HTTP/1.0 500 Internal Server Error', true, 500);
+    echo templatehelper::error("Could not get connection information!");
+    die();
+  }
 
   $database = new database($connInfo);
   $locations = $database->locationsWithApi();
   if (empty($locations))
-    die("Could not get a list of locations!");
+  {
+    header('HTTP/1.0 500 Internal Server Error', true, 500);
+    echo templatehelper::error("Could not get a list of locations!");
+    die();
+  }
 
   $tpl = new template();
   $tpl->fromFile(templatehelper::baseTemplatePath() . 'locations.tpl');

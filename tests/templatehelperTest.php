@@ -54,5 +54,20 @@ final class TemplateHelperTest extends TestCase
       $this->assertTrue(strpos($code, 'unit test') !== false);
       $this->assertTrue(strpos($code, 'unit test') > 0);
     }
+
+    public function testError()
+    {
+      $errorMessage = 'That is not the way it should be!';
+      $html = templatehelper::error($errorMessage);
+      // Output must not be null or empty.
+      $this->assertFalse($html == null);
+      $this->assertFalse(empty($html));
+
+      // Now check the generated template.
+      $this->assertTrue(strpos($html, '<title>') !== false);
+      $this->assertTrue(strpos($html, '<title>') > 0);
+      $this->assertTrue(strpos($html, $errorMessage) !== false);
+      $this->assertTrue(strpos($html, $errorMessage) > 0);
+    }
 }
 ?>

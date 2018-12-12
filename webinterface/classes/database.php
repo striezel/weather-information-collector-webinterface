@@ -51,8 +51,12 @@ class database
     try {
       $this->pdo = new PDO($dsn, $ci['db.user'], $ci['db.password']);
     } catch (PDOException $e) {
-      echo 'Connection to database failed: ' . $e->getMessage();
       $this->pdo = null;
+      // Logging to LOG_USER, because that is the only one available on Windows
+      // systems and we want to be cross-plattform.
+      openlog('wic_web', LOG_CONS | LOG_PERROR | LOG_PID, LOG_USER);
+      syslog(LOG_WARNING, 'Connection to database failed: ' . $e->getMessage());
+      closelog();
     }
   }
 
