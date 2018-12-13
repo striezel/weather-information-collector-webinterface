@@ -11,7 +11,7 @@
 <!--section-end::locationItem-->
 
 <!--section-start::sourceItem-->
-<li class="list-group-item"><a href="#l{{locationId}}a{{apiId}}">{{name}}</a></li>
+<a class="list-group-item" href="#l{{locationId}}a{{apiId}}">{{name}}</a>
 <!--section-end::sourceItem-->
 
 <!--section-start::sourceList--><div class="panel panel-default">
