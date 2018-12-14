@@ -23,6 +23,7 @@
 
   include 'classes/templatehelper.php';
   include 'classes/database.php';
+  include 'classes/formatter.php';
 
   if (!isset($_GET['location']) || empty($_GET['location']))
   {
@@ -70,10 +71,9 @@
   $tpl->loadSection('sourceList');
   $tpl->integrate('items', $items);
   $tpl->tag('name', $location['location']);
-  if ($location['latitude'] > 0.0) $tpl->tag('lat', $location['latitude'] . '°N');
-  else $tpl->tag('lat', (-1.0*$location['latitude']) . '°S');
-  if ($location['longitude'] > 0.0) $tpl->tag('lon', $location['longitude'] . '°E');
-  else $tpl->tag('lon', (-1.0*$location['longitude']) . '°W');
+  $ll = formatter::latLon($location['latitude'], $location['longitude']);
+  $tpl->tag('lat', $ll['latitude']);
+  $tpl->tag('lon', $ll['longitude']);
   $content = $tpl->generate();
 
   $tpl = templatehelper::prepareMain($content, 'Data sources');

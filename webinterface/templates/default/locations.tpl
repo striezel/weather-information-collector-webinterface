@@ -1,6 +1,5 @@
 <!--section-start::locationList--><div class="panel panel-default">
   <div class="panel-heading">Select a location</div>
-  <div class="panel-body">If you are not sure, just try one.</div>
   <div class="list-group">
     {{>items}}
   </div>
@@ -11,7 +10,7 @@
 <!--section-end::locationItem-->
 
 <!--section-start::sourceItem-->
-<a class="list-group-item" href="#l{{locationId}}a{{apiId}}">{{name}}</a>
+<a class="list-group-item" href="graph.php?location={{locationId}}&amp;api={{apiId}}">{{name}}</a>
 <!--section-end::sourceItem-->
 
 <!--section-start::sourceList--><div class="panel panel-default">

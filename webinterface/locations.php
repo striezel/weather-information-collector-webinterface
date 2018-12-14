@@ -23,6 +23,7 @@
 
   include 'classes/templatehelper.php';
   include 'classes/database.php';
+  include 'classes/formatter.php';
 
   $connInfo = configuration::connectionInfo();
   if (empty($connInfo))
@@ -48,10 +49,9 @@
   foreach ($locations as $loc) {
     $tpl->tag('name', $loc['location']);
     $tpl->tag('locationId', $loc['locationId']);
-    if ($loc['latitude'] > 0.0) $tpl->tag('lat', $loc['latitude'] . '°N');
-    else $tpl->tag('lat', (-1.0*$loc['latitude']) . '°S');
-    if ($loc['longitude'] > 0.0) $tpl->tag('lon', $loc['longitude'] . '°E');
-    else $tpl->tag('lon', (-1.0*$loc['longitude']) . '°W');
+    $ll = formatter::latLon($loc['latitude'], $loc['longitude']);
+    $tpl->tag('lat', $ll['latitude']);
+    $tpl->tag('lon', $ll['longitude']);
     $items .= $tpl->generate();
   }
   $tpl->loadSection('locationList');

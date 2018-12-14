@@ -37,16 +37,26 @@ class templatehelper
    *
    * @param content  content to include
    * @param title    the title of the page
+   * @param scripts  array containing paths of additional JS scripts to add to
+   *                 the header
    * @return true, if template was loaded successfully; false otherwise
    */
-  public static function prepareMain($content = '', $title = 'No title')
+  public static function prepareMain($content = '', $title = 'No title', $scripts = array())
   {
     $tpl = new template();
     $tpl->fromFile(templatehelper::baseTemplatePath() . 'main.tpl');
+    $scriptInc = '';
+    $tpl->loadSection('script');
+    foreach ($scripts as $path) {
+      $tpl->tag('path', $path);
+      $scriptInc .= $tpl->generate();
+    }
+
     $tpl->loadSection('header');
     $tpl->tag('twbs_path', './libs/twbs/3.3.7');
     $tpl->tag('jquery_path', './libs/jquery');
     $tpl->tag('title', $title);
+    $tpl->integrate('scripts', $scriptInc);
     $header = $tpl->generate();
 
     $tpl->loadSection('navbar');

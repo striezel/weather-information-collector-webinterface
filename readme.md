@@ -17,6 +17,8 @@ That is the whole point of the webinterface - to show data that was gathered by
 
 ## Copyright and Licensing
 
+### Main code
+
 Copyright 2018  Dirk Stolle
 
 This program is free software: you can redistribute it and/or modify
@@ -31,3 +33,14 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+### Library code
+
+The webinterface uses some libraries which can be found in the folder
+`webinterface/libs/`. These libraries may have different licenses, but all of
+them are compatible with the main code's license. Currently the following
+libraries are in use:
+
+* jQuery: MIT License
+* Bootstrap: MIT License
+* Plotly.js: MIT License

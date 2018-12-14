@@ -3,7 +3,10 @@
     <script src="{{jquery_path}}/jquery.min.js"></script>
     <link href="{{twbs_path}}/css/bootstrap.min.css" rel="stylesheet">
     <script src="{{twbs_path}}/js/bootstrap.min.js"></script>
+    {{>scripts}}
   </head><!--section-end::header-->
+
+<!--section-start::script--><script src="{{path}}"></script><!--section-end::script-->
 
 <!--section-start::full--><!DOCTYPE html>
 <html>
@@ -34,11 +37,6 @@
 
     <div class="collapse navbar-collapse" id="bs-navbar-collapse-intro">
       <ul class="nav navbar-nav">
-        <li>
-          <a href="#" id="intro">
-            <span class="glyphicon glyphicon-question-sign"> </span> Introduction
-          </a>
-        </li>
         <li class="active">
           <a href="./locations.php">
             <span class="glyphicon glyphicon-home"> </span> Locations
@@ -60,3 +58,9 @@
     <br /><br />
     {{message}}
 </div><!--section-end::error-->
+
+<!--section-start::back--><div class="btn-group btn-group-justified" role="group">
+  <a href="{{url}}" class="btn btn-info">
+    <span class="glyphicon glyphicon-backward"> </span> Back
+  </a>
+</div><!--section-end::back-->

@@ -93,6 +93,65 @@ class database
   }
 
   /**
+   * Gets information about a location by its ID.
+   *
+   * @param id  id of the location
+   * @return array containing the location information
+   */
+  public function locationById($id)
+  {
+    if (null === $this->pdo)
+      return null;
+    $sql = 'SELECT location.name AS locName, location.locationID AS locId, latitude, longitude'
+         . ' FROM location'
+         . ' WHERE NOT ISNULL(location.name) AND locationID = ' . intval($id)
+         . ' LIMIT 1;';
+    $stmt = $this->pdo->query($sql);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
+    unset($stmt);
+    if ($row !== false)
+    {
+      $row['locationId'] = $row['locId'];
+      $row['location'] = $row['locName'];
+    }
+    else
+    {
+      $row = null;
+    }
+    return $row;
+  }
+
+  /**
+   * Gets information about an API by its ID.
+   *
+   * @param id  id of the API
+   * @return array containing the API information
+   */
+  public function apiById($id)
+  {
+    if (null === $this->pdo)
+      return null;
+    $sql = 'SELECT * FROM api'
+         . ' WHERE NOT ISNULL(api.name) AND apiID = ' . intval($id)
+         . ' LIMIT 1;';
+    $stmt = $this->pdo->query($sql);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt->closeCursor();
+    unset($stmt);
+    if ($row !== false)
+    {
+      $row['apiId'] = intval($id);
+      $row['api'] = $row['name'];
+    }
+    else
+    {
+      $row = null;
+    }
+    return $row;
+  }
+
+  /**
    * Lists all APIs that have current weather data in the database for the given
    * location.
    *
@@ -119,6 +178,45 @@ class database
         'api' => $row['apiName'],
         'apiId' => $row['theApiId']
       );
+    }
+    $stmt->closeCursor();
+    unset($stmt);
+    return $data;
+  }
+
+  /**
+   * Lists all weather data in the database for the given location and API.
+   *
+   * @param locationId  id of the location
+   * @param apiId       id of the API
+   * @param hours       time span in hours to get the data for
+   * @return Returns an array of arrays containing location data.
+   */
+  public function weatherData($locationId, $apiId, $hours = 1)
+  {
+    if (null === $this->pdo)
+      return null;
+    $locationId = intval($locationId);
+    $apiId = intval($apiId);
+    $sql = 'SELECT MAX(dataTime) AS mdt FROM weatherdata'
+         . " WHERE locationID = '" . $locationId . "' AND apiID = '". $apiId ."';";
+    $stmt = $this->pdo->query($sql);
+    $maxDataTime = $stmt->fetch(PDO::FETCH_ASSOC);
+    $maxDataTime = $maxDataTime['mdt'];
+    if ($maxDataTime == null)
+      return null;
+    $hours = intval($hours);
+    if ($hours < 1)
+      $hours = 1;
+    $data = array();
+    $sql = 'SELECT DISTINCT dataTime, temperature_C, temperature_F, temperature_K, humidity, rain, pressure FROM weatherdata'
+         . " WHERE locationID = '" . $locationId . "' AND apiID = '". $apiId ."'"
+         . " AND dataTime > DATE_SUB('".$maxDataTime."', INTERVAL ".$hours.' HOUR)'
+         . ' ORDER BY dataTime ASC;';
+    $stmt = $this->pdo->query($sql);
+    while (false !== ($row = $stmt->fetch(PDO::FETCH_ASSOC)))
+    {
+      $data[] = $row;
     }
     $stmt->closeCursor();
     unset($stmt);
