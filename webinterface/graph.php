@@ -70,7 +70,7 @@ if (null == $api)
   die();
 }
 
-$graph = simplegraph::create($data, $location, $api);
+$graph = simplegraph::createWithGap($data, $location, $api);
 
 $tpl = new template();
 $tpl->fromFile(templatehelper::baseTemplatePath() . 'main.tpl');

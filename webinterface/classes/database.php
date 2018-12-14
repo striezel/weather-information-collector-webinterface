@@ -209,7 +209,7 @@ class database
     if ($hours < 1)
       $hours = 1;
     $data = array();
-    $sql = 'SELECT DISTINCT dataTime, temperature_C, temperature_F, temperature_K, humidity, rain, pressure FROM weatherdata'
+    $sql = 'SELECT DISTINCT dataTime, UNIX_TIMESTAMP(dataTime) AS dt_ts, temperature_C, temperature_F, temperature_K, humidity, rain, pressure FROM weatherdata'
          . " WHERE locationID = '" . $locationId . "' AND apiID = '". $apiId ."'"
          . " AND dataTime > DATE_SUB('".$maxDataTime."', INTERVAL ".$hours.' HOUR)'
          . ' ORDER BY dataTime ASC;';

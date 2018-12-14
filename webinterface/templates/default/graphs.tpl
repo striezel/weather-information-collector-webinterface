@@ -10,6 +10,7 @@
       y: temperature,
       type: 'scatter',
       name: 'Temperature [°C]',
+      connectgaps: false,
       line: {
           color: 'rgb(255, 0, 0)'
       }
@@ -20,6 +21,7 @@
       type: 'scatter',
       yaxis: 'y2',
       name: 'Humidity [%]',
+      connectgaps: false,
       line: {
           color: 'rgb(0, 0, 255)'
       }
