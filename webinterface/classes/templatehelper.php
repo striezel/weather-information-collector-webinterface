@@ -39,9 +39,10 @@ class templatehelper
    * @param title    the title of the page
    * @param scripts  array containing paths of additional JS scripts to add to
    *                 the header
+   * @param navItems array containing the items for the navbar
    * @return true, if template was loaded successfully; false otherwise
    */
-  public static function prepareMain($content = '', $title = 'No title', $scripts = array())
+  public static function prepareMain($content = '', $title = 'No title', $scripts = array(), $navItems = array())
   {
     $tpl = new template();
     $tpl->fromFile(templatehelper::baseTemplatePath() . 'main.tpl');
@@ -59,7 +60,20 @@ class templatehelper
     $tpl->integrate('scripts', $scriptInc);
     $header = $tpl->generate();
 
+    $navInc = '';
+    foreach ($navItems as $navi) {
+      if (isset($navi['active']) && !empty($navi['active']))
+        $tpl->loadSection('navItemActive');
+      else
+        $tpl->loadSection('navItem');
+      $tpl->tag('url', $navi['url']);
+      $tpl->tag('icon', $navi['icon']);
+      $tpl->tag('caption', $navi['caption']);
+      $navInc .= $tpl->generate();
+    }
+
     $tpl->loadSection('navbar');
+    $tpl->integrate('items', $navInc);
     $navbar = $tpl->generate();
 
     $tpl->loadSection('full');

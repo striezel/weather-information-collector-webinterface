@@ -76,7 +76,14 @@
   $tpl->tag('lon', $ll['longitude']);
   $content = $tpl->generate();
 
-  $tpl = templatehelper::prepareMain($content, 'Data sources');
+  $navItems = array(
+    array('url' => './locations.php', 'icon' => 'home', 'caption' => 'Locations'),
+    array(
+      'url' => './source.php?location=' . $_GET['location'],
+      'icon' => 'duplicate', 'caption' => 'Data sources', 'active' => true
+    )
+  );
+  $tpl = templatehelper::prepareMain($content, 'Data sources', array(), $navItems);
 
   echo $tpl->generate();
 ?>

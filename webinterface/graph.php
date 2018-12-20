@@ -104,6 +104,21 @@ if (!$full)
   $title .= ' for the last 48 hours';
 }
 $title .= ', data provided by ' . $api['name'];
-$tpl = templatehelper::prepareMain($graph . $backButton, $title, $scripts);
+$navItems = array(
+  array('url' => './locations.php', 'icon' => 'home', 'caption' => 'Locations'),
+  array(
+    'url' => './source.php?location=' . $_GET['location'],
+    'icon' => 'duplicate', 'caption' => 'Data sources'
+  ),
+  array(
+    'url' => './graph.php?location=' . $_GET['location'] . '&api=' . $_GET['api'],
+    'icon' => 'stats', 'caption' => 'Recent data', 'active' => !$full
+  ),
+  array(
+    'url' => './graph.php?location=' . $_GET['location'] . '&api=' . $_GET['api'] . '&full=1',
+    'icon' => 'stats', 'caption' => 'All data', 'active' => $full
+  )
+);
+$tpl = templatehelper::prepareMain($graph . $backButton, $title, $scripts, $navItems);
 echo $tpl->generate();
 ?>

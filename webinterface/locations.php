@@ -58,7 +58,10 @@
   $tpl->integrate('items', $items);
   $content = $tpl->generate();
 
-  $tpl = templatehelper::prepareMain($content, 'Cities');
+  $navItems = array(
+    array('url' => './locations.php', 'active' => true, 'icon' => 'home', 'caption' => 'Locations')
+  );
+  $tpl = templatehelper::prepareMain($content, 'Cities', array(), $navItems);
 
   echo $tpl->generate();
 ?>

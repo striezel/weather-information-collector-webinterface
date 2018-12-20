@@ -37,21 +37,26 @@
 
     <div class="collapse navbar-collapse" id="bs-navbar-collapse-intro">
       <ul class="nav navbar-nav">
-        <li class="active">
-          <a href="./locations.php">
-            <span class="glyphicon glyphicon-home"> </span> Locations
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <span class="glyphicon glyphicon-transfer"> </span> Test
-          </a>
-        </li>
+        {{>items}}
       </ul>
     </div>
   </div>
 </nav>
 <!--section-end::navbar-->
+
+<!--section-start::navItem-->        <li>
+          <a href="{{url}}">
+            <span class="glyphicon glyphicon-{{icon}}"> </span> {{caption}}
+          </a>
+        </li>
+<!--section-end::navItem-->
+
+<!--section-start::navItemActive-->        <li class="active">
+          <a href="{{url}}">
+            <span class="glyphicon glyphicon-{{icon}}"> </span> {{caption}}
+          </a>
+        </li>
+<!--section-end::navItemActive-->
 
 <!--section-start::error--><div class="alert alert-danger" align="justify" role="alert">
     <strong>An error occurred!</strong>
