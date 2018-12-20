@@ -189,10 +189,11 @@ class database
    *
    * @param locationId  id of the location
    * @param apiId       id of the API
-   * @param hours       time span in hours to get the data for
+   * @param hours       time span in hours to get the data for; if this is zero,
+   *                    then all data will be returned.
    * @return Returns an array of arrays containing location data.
    */
-  public function weatherData($locationId, $apiId, $hours = 1)
+  public function weatherData($locationId, $apiId, $hours = 12)
   {
     if (null === $this->pdo)
       return null;
@@ -206,13 +207,15 @@ class database
     if ($maxDataTime == null)
       return null;
     $hours = intval($hours);
-    if ($hours < 1)
-      $hours = 1;
     $data = array();
     $sql = 'SELECT DISTINCT dataTime, UNIX_TIMESTAMP(dataTime) AS dt_ts, temperature_C, temperature_F, temperature_K, humidity, rain, pressure FROM weatherdata'
-         . " WHERE locationID = '" . $locationId . "' AND apiID = '". $apiId ."'"
-         . " AND dataTime > DATE_SUB('".$maxDataTime."', INTERVAL ".$hours.' HOUR)'
-         . ' ORDER BY dataTime ASC;';
+         . " WHERE locationID = '" . $locationId . "' AND apiID = '". $apiId ."'";
+    // Limit range only for hours greater than zero.
+    if ($hours >= 1)
+    {
+      $sql .= " AND dataTime > DATE_SUB('".$maxDataTime."', INTERVAL ".$hours.' HOUR)';
+    }
+    $sql .= ' ORDER BY dataTime ASC;';
     $stmt = $this->pdo->query($sql);
     while (false !== ($row = $stmt->fetch(PDO::FETCH_ASSOC)))
     {

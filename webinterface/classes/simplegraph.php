@@ -64,14 +64,15 @@ class simplegraph
    * Data gaps larger than 6 hours (+15 seconds) will be shown as visible gaps
    * in the plot.
    *
-   * @param data  weather data array
-   * @param location location data
-   * @param api      API data
+   * @param data       weather data array
+   * @param location   location data
+   * @param api        API data
+   * @param tplSection section to load from the graphs.tpl file
    * @return Returns a string containing the HTML code for the graph.
    */
-  public static function createWithGap($data, $location, $api)
+  public static function createWithGap($data, $location, $api, $tplSection = 'simplegraph')
   {
-    if (empty($data) || empty($location))
+    if (empty($data) || empty($location) || empty($tplSection))
       return null;
 
     $dates = array();
@@ -103,7 +104,7 @@ class simplegraph
 
     $tpl = new template();
     $tpl->fromFile(templatehelper::baseTemplatePath() . 'graphs.tpl');
-    $tpl->loadSection('simplegraph');
+    $tpl->loadSection($tplSection);
     $title = 'Weather of ' . $location['location'] . ' ('
            . $ll['latitude'] . ', ' . $ll['longitude'] . '), data by '
            . $api['name'];

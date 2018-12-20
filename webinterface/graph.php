@@ -48,7 +48,16 @@ if (empty($connInfo))
 }
 
 $database = new database($connInfo);
-$data = $database->weatherData($_GET['location'], $_GET['api'], 48);
+$data = array();
+$full = isset($_GET['full']);
+if (!$full)
+{
+  $data = $database->weatherData($_GET['location'], $_GET['api'], 48);
+}
+else
+{
+  $data = $database->weatherData($_GET['location'], $_GET['api'], 0);
+}
 if (empty($data))
 {
   header('HTTP/1.0 500 Internal Server Error', true, 500);
@@ -70,7 +79,15 @@ if (null == $api)
   die();
 }
 
-$graph = simplegraph::createWithGap($data, $location, $api);
+$graph = null;
+if (!$full)
+{
+  $graph = simplegraph::createWithGap($data, $location, $api);
+}
+else
+{
+  $graph = simplegraph::createWithGap($data, $location, $api, 'rangegraph');
+}
 
 $tpl = new template();
 $tpl->fromFile(templatehelper::baseTemplatePath() . 'main.tpl');
@@ -81,8 +98,12 @@ $backButton = $tpl->generate();
 $scripts = array('./libs/plotly/plotly.min.js');
 $ll = formatter::latLon($location['latitude'], $location['longitude']);
 $title = 'Weather of ' . $location['location'] . ' (' . $ll['latitude']
-       . ', ' . $ll['longitude'] . ') for the last 48 hours, data provided by '
-       . $api['name'];
+       . ', ' . $ll['longitude'] . ')';
+if (!$full)
+{
+  $title .= ' for the last 48 hours';
+}
+$title .= ', data provided by ' . $api['name'];
 $tpl = templatehelper::prepareMain($graph . $backButton, $title, $scripts);
 echo $tpl->generate();
 ?>

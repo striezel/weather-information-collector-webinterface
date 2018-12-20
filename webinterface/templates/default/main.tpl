@@ -31,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <span class="glyphicon glyphicon-cloud"> </span>
-        <strong>Weather information collector</strong>
+        <strong>Weather</strong>
       </span>
     </div>
 
