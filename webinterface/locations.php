@@ -71,6 +71,11 @@
   $tpl->integrate('items', $items);
   $content = $tpl->generate();
 
+  $tpl->fromFile(templatehelper::baseTemplatePath() . 'main.tpl');
+  $tpl->loadSection('back');
+  $tpl->tag('url', './types.php');
+  $content .= $tpl->generate();
+
   $navItems = array(
     array('url' => './types.php', 'icon' => 'th-list', 'caption' => 'Weather type'),
     array('url' => './locations.php?type=' . $_GET['type'], 'active' => true, 'icon' => 'home', 'caption' => 'Locations')
