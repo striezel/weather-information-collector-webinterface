@@ -30,9 +30,10 @@ class simplegraph
    * @param location   location data
    * @param api        API data
    * @param tplSection section to load from the graphs.tpl file
+   * @param title      title of the graph
    * @return Returns a string containing the HTML code for the graph.
    */
-  public static function createWithGap($data, $location, $api, $tplSection = 'simplegraph')
+  public static function createWithGap($data, $location, $api, $tplSection = 'simplegraph', $title = '')
   {
     if (empty($data) || empty($location) || empty($tplSection))
       return null;
@@ -62,14 +63,16 @@ class simplegraph
       $humidity[] = $value['humidity'];
     }
 
-    $ll = formatter::latLon($location['latitude'], $location['longitude']);
-
     $tpl = new template();
     $tpl->fromFile(templatehelper::baseTemplatePath() . 'graphs.tpl');
     $tpl->loadSection($tplSection);
-    $title = 'Weather of ' . $location['location'] . ' ('
-           . $ll['latitude'] . ', ' . $ll['longitude'] . '), data by '
-           . $api['name'];
+    if (empty($title))
+    {
+      $ll = formatter::latLon($location['latitude'], $location['longitude']);
+      $title = 'Weather of ' . $location['location'] . ' ('
+             . $ll['latitude'] . ', ' . $ll['longitude'] . '), data by '
+             . $api['name'];
+    }
     $tpl->tag('title', $title);
     $tpl->integrate('dates', json_encode($dates));
     $tpl->integrate('temperature', json_encode($temperature));

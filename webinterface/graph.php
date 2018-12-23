@@ -105,21 +105,45 @@ if (null == $api)
   die();
 }
 
+$ll = formatter::latLon($location['latitude'], $location['longitude']);
+$pageTitle = 'No title';
+$graphTitle = '';
+if ($_GET['type'] === 'current')
+{
+  $pageTitle = 'Weather of ' . $location['location'] . ' (' . $ll['latitude']
+         . ', ' . $ll['longitude'] . ')';
+  $graphTitle = $pageTitle;
+  if (!$full)
+  {
+    $pageTitle .= ' for the last 48 hours';
+    $graphTitle .= ', last 48h only';
+  }
+  $pageTitle .= ', data provided by ' . $api['name'];
+  $graphTitle .= ', data by ' . $api['name'];
+}
+else
+{
+  $pageTitle = 'Weather forecast for ' . $location['location'] . ' (' . $ll['latitude']
+         . ', ' . $ll['longitude'] . '), data provided by ' . $api['name'];
+  $graphTitle = 'Forecast for ' . $location['location'] . ' (' . $ll['latitude']
+         . ', ' . $ll['longitude'] . '), data by ' . $api['name'];
+}
+
 $graph = null;
 if ($_GET['type'] === 'current')
 {
   if (!$full)
   {
-    $graph = simplegraph::createWithGap($data, $location, $api, 'simplegraph');
+    $graph = simplegraph::createWithGap($data, $location, $api, 'simplegraph', $graphTitle);
   }
   else
   {
-    $graph = simplegraph::createWithGap($data, $location, $api, 'rangegraph');
+    $graph = simplegraph::createWithGap($data, $location, $api, 'rangegraph', $graphTitle);
   }
 }
 else
 {
-  $graph = simplegraph::createWithGap($data, $location, $api, 'forecastgraph');
+  $graph = simplegraph::createWithGap($data, $location, $api, 'forecastgraph', $graphTitle);
 }
 
 $tpl = new template();
@@ -129,23 +153,6 @@ $tpl->tag('url', 'source.php?location=' . $_GET['location'] . '&type=' . $_GET['
 $backButton = $tpl->generate();
 
 $scripts = array('./libs/plotly/plotly.min.js');
-$ll = formatter::latLon($location['latitude'], $location['longitude']);
-$title = 'No title';
-if ($_GET['type'] === 'current')
-{
-  $title = 'Weather of ' . $location['location'] . ' (' . $ll['latitude']
-         . ', ' . $ll['longitude'] . ')';
-  if (!$full)
-  {
-    $title .= ' for the last 48 hours';
-  }
-  $title .= ', data provided by ' . $api['name'];
-}
-else
-{
-  $title = 'Weather forecast for ' . $location['location'] . ' (' . $ll['latitude']
-         . ', ' . $ll['longitude'] . '), data provided by ' . $api['name'];
-}
 $navItems = array(
   array('url' => './types.php', 'icon' => 'th-list', 'caption' => 'Weather type'),
   array('url' => './locations.php?type=' . $_GET['type'], 'icon' => 'home', 'caption' => 'Locations'),
@@ -166,6 +173,6 @@ if ($_GET['type'] === 'current')
   );
 }
 
-$tpl = templatehelper::prepareMain($graph . $backButton, $title, $scripts, $navItems);
+$tpl = templatehelper::prepareMain($graph . $backButton, $pageTitle, $scripts, $navItems);
 echo $tpl->generate();
 ?>
