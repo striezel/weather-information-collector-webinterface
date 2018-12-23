@@ -92,8 +92,12 @@
   $ll = formatter::latLon($location['latitude'], $location['longitude']);
   $tpl->tag('lat', $ll['latitude']);
   $tpl->tag('lon', $ll['longitude']);
-  $tpl->tag('type', $_GET['type']);
   $content = $tpl->generate();
+
+  $tpl->fromFile(templatehelper::baseTemplatePath() . 'main.tpl');
+  $tpl->loadSection('back');
+  $tpl->tag('url', './locations.php?type=' . $_GET['type']);
+  $content .= $tpl->generate();
 
   $navItems = array(
     array('url' => './types.php', 'icon' => 'th-list', 'caption' => 'Weather type'),

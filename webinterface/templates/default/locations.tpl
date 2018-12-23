@@ -19,10 +19,4 @@
   <ul class="list-group">
     {{>items}}
   </ul>
-</div>
-
-<div class="btn-group btn-group-justified" role="group">
-  <a href="locations.php?type={{type}}" class="btn btn-info">
-    <span class="glyphicon glyphicon-backward"> </span> Back
-  </a>
 </div><!--section-end::sourceList-->
