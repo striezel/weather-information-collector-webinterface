@@ -25,6 +25,14 @@
   include 'classes/database.php';
   include 'classes/formatter.php';
 
+  if (!isset($_GET['type'])
+    || (($_GET['type'] !== 'forecast') && ($_GET['type'] !== 'current')))
+  {
+    header('HTTP/1.0 400 Bad Request', true, 400);
+    echo templatehelper::error("Missing or invalid weather data type!");
+    die();
+  }
+
   $connInfo = configuration::connectionInfo();
   if (empty($connInfo))
   {
@@ -34,7 +42,11 @@
   }
 
   $database = new database($connInfo);
-  $locations = $database->locations();
+  $locations = array();
+  if ($_GET['type'] === 'forecast')
+    $locations = $database->locationsForecast();
+  else
+    $locations = $database->locations();
   if (empty($locations))
   {
     header('HTTP/1.0 500 Internal Server Error', true, 500);
@@ -47,6 +59,7 @@
   $tpl->loadSection('locationItem');
   $items = '';
   foreach ($locations as $loc) {
+    $tpl->tag('type', $_GET['type']);
     $tpl->tag('name', $loc['location']);
     $tpl->tag('locationId', $loc['locationId']);
     $ll = formatter::latLon($loc['latitude'], $loc['longitude']);
@@ -59,7 +72,8 @@
   $content = $tpl->generate();
 
   $navItems = array(
-    array('url' => './locations.php', 'active' => true, 'icon' => 'home', 'caption' => 'Locations')
+    array('url' => './types.php', 'icon' => 'th-list', 'caption' => 'Weather type'),
+    array('url' => './locations.php?type=' . $_GET['type'], 'active' => true, 'icon' => 'home', 'caption' => 'Locations')
   );
   $tpl = templatehelper::prepareMain($content, 'Cities', array(), $navItems);
 

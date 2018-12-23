@@ -26,14 +26,23 @@ include 'classes/database.php';
 include 'classes/formatter.php';
 include 'classes/simplegraph.php';
 
+if (!isset($_GET['type'])
+  || (($_GET['type'] !== 'forecast') && ($_GET['type'] !== 'current')))
+{
+  header('HTTP/1.0 400 Bad Request', true, 400);
+  echo templatehelper::error("Missing or invalid weather data type!");
+  die();
+}
 if (!isset($_GET['location']) || empty($_GET['location']))
 {
+  header('HTTP/1.0 400 Bad Request', true, 400);
   echo templatehelper::error("No location has been selected.");
   die();
 }
 $_GET['location'] = intval($_GET['location']);
 if (!isset($_GET['api']) || empty($_GET['api']))
 {
+  header('HTTP/1.0 400 Bad Request', true, 400);
   echo templatehelper::error("No data source has been selected.");
   die();
 }
@@ -50,18 +59,35 @@ if (empty($connInfo))
 $database = new database($connInfo);
 $data = array();
 $full = isset($_GET['full']);
-if (!$full)
+if ($_GET['type'] === 'current')
 {
-  $data = $database->weatherData($_GET['location'], $_GET['api'], 48);
+  // Get current & past weather data.
+  if (!$full)
+  {
+    // ... for the latest 48 hours only.
+    $data = $database->weatherData($_GET['location'], $_GET['api'], 48);
+  }
+  else
+  {
+    // ... for all the time.
+    $data = $database->weatherData($_GET['location'], $_GET['api'], 0);
+  }
 }
 else
 {
-  $data = $database->weatherData($_GET['location'], $_GET['api'], 0);
+  // Get latest forecast data.
+  $data = $database->forecastData($_GET['location'], $_GET['api']);
 }
-if (empty($data))
+if ($data === null)
 {
   header('HTTP/1.0 500 Internal Server Error', true, 500);
   echo templatehelper::error("Could not get weather data from the database!");
+  die();
+}
+if (empty($data))
+{
+  header('HTTP/1.0 204 No Content', true, 204);
+  echo templatehelper::error("There is no for the selected type, location and source!");
   die();
 }
 $location = $database->locationById($_GET['location']);
@@ -80,45 +106,66 @@ if (null == $api)
 }
 
 $graph = null;
-if (!$full)
+if ($_GET['type'] === 'current')
 {
-  $graph = simplegraph::createWithGap($data, $location, $api);
+  if (!$full)
+  {
+    $graph = simplegraph::createWithGap($data, $location, $api, 'simplegraph');
+  }
+  else
+  {
+    $graph = simplegraph::createWithGap($data, $location, $api, 'rangegraph');
+  }
 }
 else
 {
-  $graph = simplegraph::createWithGap($data, $location, $api, 'rangegraph');
+  $graph = simplegraph::createWithGap($data, $location, $api, 'forecastgraph');
 }
 
 $tpl = new template();
 $tpl->fromFile(templatehelper::baseTemplatePath() . 'main.tpl');
 $tpl->loadSection('back');
-$tpl->tag('url', 'source.php?location=' . $_GET['location']);
+$tpl->tag('url', 'source.php?location=' . $_GET['location'] . '&type=' . $_GET['type']);
 $backButton = $tpl->generate();
 
 $scripts = array('./libs/plotly/plotly.min.js');
 $ll = formatter::latLon($location['latitude'], $location['longitude']);
-$title = 'Weather of ' . $location['location'] . ' (' . $ll['latitude']
-       . ', ' . $ll['longitude'] . ')';
-if (!$full)
+$title = 'No title';
+if ($_GET['type'] === 'current')
 {
-  $title .= ' for the last 48 hours';
+  $title = 'Weather of ' . $location['location'] . ' (' . $ll['latitude']
+         . ', ' . $ll['longitude'] . ')';
+  if (!$full)
+  {
+    $title .= ' for the last 48 hours';
+  }
+  $title .= ', data provided by ' . $api['name'];
 }
-$title .= ', data provided by ' . $api['name'];
+else
+{
+  $title = 'Weather forecast for ' . $location['location'] . ' (' . $ll['latitude']
+         . ', ' . $ll['longitude'] . '), data provided by ' . $api['name'];
+}
 $navItems = array(
-  array('url' => './locations.php', 'icon' => 'home', 'caption' => 'Locations'),
+  array('url' => './types.php', 'icon' => 'th-list', 'caption' => 'Weather type'),
+  array('url' => './locations.php?type=' . $_GET['type'], 'icon' => 'home', 'caption' => 'Locations'),
   array(
-    'url' => './source.php?location=' . $_GET['location'],
+    'url' => './source.php?location=' . $_GET['location'] . '&type=' . $_GET['type'],
     'icon' => 'duplicate', 'caption' => 'Data sources'
   ),
   array(
-    'url' => './graph.php?location=' . $_GET['location'] . '&api=' . $_GET['api'],
+    'url' => './graph.php?location=' . $_GET['location'] . '&api=' . $_GET['api']. '&type=' . $_GET['type'],
     'icon' => 'stats', 'caption' => 'Recent data', 'active' => !$full
-  ),
-  array(
-    'url' => './graph.php?location=' . $_GET['location'] . '&api=' . $_GET['api'] . '&full=1',
-    'icon' => 'stats', 'caption' => 'All data', 'active' => $full
   )
 );
+if ($_GET['type'] === 'current')
+{
+  $navItems[] = array(
+    'url' => './graph.php?location=' . $_GET['location'] . '&api=' . $_GET['api'] . '&type=' . $_GET['type'] . '&full=1',
+    'icon' => 'stats', 'caption' => 'All data', 'active' => $full
+  );
+}
+
 $tpl = templatehelper::prepareMain($graph . $backButton, $title, $scripts, $navItems);
 echo $tpl->generate();
 ?>

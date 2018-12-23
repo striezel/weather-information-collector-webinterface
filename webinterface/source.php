@@ -25,8 +25,17 @@
   include 'classes/database.php';
   include 'classes/formatter.php';
 
+  if (!isset($_GET['type'])
+    || (($_GET['type'] !== 'forecast') && ($_GET['type'] !== 'current')))
+  {
+    header('HTTP/1.0 400 Bad Request', true, 400);
+    echo templatehelper::error("Missing or invalid weather data type!");
+    die();
+  }
+
   if (!isset($_GET['location']) || empty($_GET['location']))
   {
+    header('HTTP/1.0 400 Bad Request', true, 400);
     echo templatehelper::error("No location has been selected.");
     die();
   }
@@ -41,7 +50,11 @@
   }
 
   $database = new database($connInfo);
-  $apis = $database->apisOfLocation($_GET['location']);
+  $apis = array();
+  if ($_GET['type'] === 'forecast')
+    $apis = $database->apisOfLocationForecast($_GET['location']);
+  else
+    $apis = $database->apisOfLocation($_GET['location']);
   if (empty($apis))
   {
     header('HTTP/1.0 500 Internal Server Error', true, 500);
@@ -57,10 +70,15 @@
     $tpl->tag('name', $api['api']);
     $tpl->tag('apiId', $api['apiId']);
     $tpl->tag('locationId', $_GET['location']);
+    $tpl->tag('type', $_GET['type']);
     $items .= $tpl->generate();
   }
 
-  $location = $database->locations();
+  $location = array();
+  if ($_GET['type'] === 'forecast')
+    $location = $database->locationsForecast();
+  else
+    $location = $database->locations();
   function locationFilter($item)
   {
     return $item['locationId'] == $_GET['location'];
@@ -74,12 +92,14 @@
   $ll = formatter::latLon($location['latitude'], $location['longitude']);
   $tpl->tag('lat', $ll['latitude']);
   $tpl->tag('lon', $ll['longitude']);
+  $tpl->tag('type', $_GET['type']);
   $content = $tpl->generate();
 
   $navItems = array(
-    array('url' => './locations.php', 'icon' => 'home', 'caption' => 'Locations'),
+    array('url' => './types.php', 'icon' => 'th-list', 'caption' => 'Weather type'),
+    array('url' => './locations.php?type=' . $_GET['type'], 'icon' => 'home', 'caption' => 'Locations'),
     array(
-      'url' => './source.php?location=' . $_GET['location'],
+      'url' => './source.php?location=' . $_GET['location'] . '&type=' . $_GET['type'],
       'icon' => 'duplicate', 'caption' => 'Data sources', 'active' => true
     )
   );

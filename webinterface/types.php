@@ -19,5 +19,19 @@
  -------------------------------------------------------------------------------
 */
 
-  include 'types.php';
+  define('WIC_WEB_ROOT', __DIR__);
+
+  include 'classes/templatehelper.php';
+
+  $tpl = new template();
+  $tpl->fromFile(templatehelper::baseTemplatePath() . 'types.tpl');
+  $tpl->loadSection('typeList');
+  $content = $tpl->generate();
+
+  $navItems = array(
+    array('url' => './types.php', 'active' => true, 'icon' => 'th-list', 'caption' => 'Weather type')
+  );
+  $tpl = templatehelper::prepareMain($content, 'Weather type', array(), $navItems);
+
+  echo $tpl->generate();
 ?>

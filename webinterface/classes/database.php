@@ -93,6 +93,38 @@ class database
   }
 
   /**
+   * Lists all named locations that have weather forecast data in the database.
+   *
+   * @return Returns an array of arrays containing location data.
+   */
+  public function locationsForecast()
+  {
+    if (null === $this->pdo)
+      return null;
+    $sql = 'SELECT DISTINCT location.name AS locName, location.locationID AS locId, latitude, longitude'
+         . ' FROM forecast'
+         . ' LEFT JOIN api ON forecast.apiID = api.apiID'
+         . ' LEFT JOIN location ON location.locationID = forecast.locationID'
+         . ' WHERE NOT ISNULL(location.name)'
+         . '   AND NOT ISNULL(api.name)'
+         . ' ORDER BY locName ASC;';
+    $stmt = $this->pdo->query($sql);
+    $data = array();
+    while (false !== ($row = $stmt->fetch(PDO::FETCH_ASSOC)))
+    {
+      $data[] = array(
+        'location' => $row['locName'],
+        'locationId' => $row['locId'],
+        'latitude' => $row['latitude'],
+        'longitude' => $row['longitude']
+      );
+    }
+    $stmt->closeCursor();
+    unset($stmt);
+    return $data;
+  }
+
+  /**
    * Gets information about a location by its ID.
    *
    * @param id  id of the location
@@ -185,13 +217,46 @@ class database
   }
 
   /**
+   * Lists all APIs that have weather forecast data in the database for the
+   * given location.
+   *
+   * @param locationId  id of the location
+   * @return Returns an array of arrays containing location data.
+   */
+  public function apisOfLocationForecast($locationId)
+  {
+    if (null === $this->pdo)
+      return null;
+    $locationId = intval($locationId);
+    $sql = 'SELECT DISTINCT api.apiID AS theApiId, api.name AS apiName'
+         . ' FROM api'
+         . ' LEFT JOIN forecast ON forecast.apiID = api.apiID'
+         . ' LEFT JOIN location ON location.locationID = forecast.locationID'
+         . ' WHERE NOT ISNULL(location.locationID)'
+         . '     AND location.locationID=' . $locationId
+         . ' ORDER BY api.name ASC;';
+    $stmt = $this->pdo->query($sql);
+    $data = array();
+    while (false !== ($row = $stmt->fetch(PDO::FETCH_ASSOC)))
+    {
+      $data[] = array(
+        'api' => $row['apiName'],
+        'apiId' => $row['theApiId']
+      );
+    }
+    $stmt->closeCursor();
+    unset($stmt);
+    return $data;
+  }
+
+  /**
    * Lists all weather data in the database for the given location and API.
    *
    * @param locationId  id of the location
    * @param apiId       id of the API
    * @param hours       time span in hours to get the data for; if this is zero,
    *                    then all data will be returned.
-   * @return Returns an array of arrays containing location data.
+   * @return Returns an array of arrays containing weather data.
    */
   public function weatherData($locationId, $apiId, $hours = 12)
   {
@@ -205,7 +270,7 @@ class database
     $maxDataTime = $stmt->fetch(PDO::FETCH_ASSOC);
     $maxDataTime = $maxDataTime['mdt'];
     if ($maxDataTime == null)
-      return null;
+      return array();
     $hours = intval($hours);
     $data = array();
     $sql = 'SELECT DISTINCT dataTime, UNIX_TIMESTAMP(dataTime) AS dt_ts, temperature_C, temperature_F, temperature_K, humidity, rain, pressure FROM weatherdata'
@@ -216,6 +281,46 @@ class database
       $sql .= " AND dataTime > DATE_SUB('".$maxDataTime."', INTERVAL ".$hours.' HOUR)';
     }
     $sql .= ' ORDER BY dataTime ASC;';
+    $stmt = $this->pdo->query($sql);
+    while (false !== ($row = $stmt->fetch(PDO::FETCH_ASSOC)))
+    {
+      $data[] = $row;
+    }
+    $stmt->closeCursor();
+    unset($stmt);
+    return $data;
+  }
+
+  /**
+   * Lists latest weather forecast data in the database for the given location
+   * and API.
+   *
+   * @param locationId  id of the location
+   * @param apiId       id of the API
+   * @return Returns an array of arrays containing weather forecast data.
+   */
+  public function forecastData($locationId, $apiId)
+  {
+    if (null === $this->pdo)
+      return null;
+    $locationId = intval($locationId);
+    $apiId = intval($apiId);
+    $sql = 'SELECT forecastID, requestTime FROM forecast'
+         . " WHERE locationID = '" . $locationId . "' AND apiID = '". $apiId ."'"
+         . " ORDER BY requestTime DESC LIMIT 1;";
+    $stmt = $this->pdo->query($sql);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row === false)
+    {
+      // No data found.
+      return array();
+    }
+    $forecastId = intval($row['forecastID']);
+    $requestTime = $row['requestTime'];
+
+    $data = array();
+    $sql = 'SELECT dataTime, UNIX_TIMESTAMP(dataTime) AS dt_ts, temperature_C, temperature_F, temperature_K, humidity, rain, pressure FROM forecastdata'
+         . " WHERE forecastID = '" . $forecastId . "' ORDER BY dataTime ASC;";
     $stmt = $this->pdo->query($sql);
     while (false !== ($row = $stmt->fetch(PDO::FETCH_ASSOC)))
     {

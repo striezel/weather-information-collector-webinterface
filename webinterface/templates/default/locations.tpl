@@ -6,11 +6,11 @@
 </div><!--section-end::locationList-->
 
 <!--section-start::locationItem-->
-<a href="source.php?location={{locationId}}" class="list-group-item">{{name}} ({{lat}}, {{lon}})</a>
+<a href="source.php?location={{locationId}}&amp;type={{type}}" class="list-group-item">{{name}} ({{lat}}, {{lon}})</a>
 <!--section-end::locationItem-->
 
 <!--section-start::sourceItem-->
-<a class="list-group-item" href="graph.php?location={{locationId}}&amp;api={{apiId}}">{{name}}</a>
+<a class="list-group-item" href="graph.php?location={{locationId}}&amp;api={{apiId}}&amp;type={{type}}">{{name}}</a>
 <!--section-end::sourceItem-->
 
 <!--section-start::sourceList--><div class="panel panel-default">
@@ -22,7 +22,7 @@
 </div>
 
 <div class="btn-group btn-group-justified" role="group">
-  <a href="locations.php" class="btn btn-info">
+  <a href="locations.php?type={{type}}" class="btn btn-info">
     <span class="glyphicon glyphicon-backward"> </span> Back
   </a>
 </div><!--section-end::sourceList-->

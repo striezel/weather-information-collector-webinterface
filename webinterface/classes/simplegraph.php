@@ -23,44 +23,6 @@ class simplegraph
 {
   /**
    * Creates a simple weather data graph with temperature and humidity data.
-   *
-   * @param data  weather data array
-   * @param location location data
-   * @param api      API data
-   * @return Returns a string containing the HTML code for the graph.
-   */
-  public static function create($data, $location, $api)
-  {
-    if (empty($data) || empty($location))
-      return null;
-
-    $dates = array();
-    $temperature = array();
-    $humidity = array();
-    foreach ($data as $key => $value)
-    {
-      $dates[] = $value['dataTime'];
-      $temperature[] = $value['temperature_C'];
-      $humidity[] = $value['humidity'];
-    }
-
-    $ll = formatter::latLon($location['latitude'], $location['longitude']);
-
-    $tpl = new template();
-    $tpl->fromFile(templatehelper::baseTemplatePath() . 'graphs.tpl');
-    $tpl->loadSection('simplegraph');
-    $title = 'Weather of ' . $location['location'] . ' ('
-           . $ll['latitude'] . ', ' . $ll['longitude'] . '), data by '
-           . $api['name'];
-    $tpl->tag('title', $title);
-    $tpl->integrate('dates', json_encode($dates));
-    $tpl->integrate('temperature', json_encode($temperature));
-    $tpl->integrate('humidity', json_encode($humidity));
-    return $tpl->generate();
-  }
-
-  /**
-   * Creates a simple weather data graph with temperature and humidity data.
    * Data gaps larger than 6 hours (+15 seconds) will be shown as visible gaps
    * in the plot.
    *
