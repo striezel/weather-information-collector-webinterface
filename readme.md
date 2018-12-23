@@ -1,13 +1,61 @@
 # Webinterface for weather-information-collector
 
-This will be a webinterface for [weather-information-collector](https://github.com/striezel/weather-information-collector).
-It will visualize any data that was collected.
+This is a webinterface for [weather-information-collector](https://gitlab.com/striezel/weather-information-collector).
+It will visualize the data that was collected.
 
-This is a work in progress and not finished yet.
+This is a work in progress and not completely finished yet.
 
-## Known issues
+## Installation
 
-Not really an issue, but rather by design:
+### Prerequisites
+
+* PHP 5.6 or newer (PHP 5.4 might still work, but has not been tested.)
+* MySQL extension for PHP
+* a webserver (e.g. Apache, lighttpd, nginx,...)
+
+Those can usually be installed by typing
+
+    apt-get install php php-mysql lighttpd
+
+into a terminal as root user.
+
+### Configuration
+
+A configuration file containing the database connection information for the
+MySQL/MariaDB database has to be created in one of the following locations:
+
+* `user's home directory`/.wic/wic.conf
+* `user's home directory`/.weather-information-collector/wic.conf
+* `user's home directory`/.weather-information-collector/weather-information-collector.conf
+* /etc/weather-information-collector/weather-information-collector.conf
+* /etc/weather-information-collector/wic.conf
+* /etc/wic/wic.conf
+
+In those lines above, `user's home directory` is the home directory of the user
+that runs the PHP scripts on the webserver. On Debian-based systems that user is
+usually `www-data` and has the home directory `/var/www`.
+
+The format is the same as the [core configuration file](https://gitlab.com/striezel/weather-information-collector/blob/master/doc/configuration-core.md)
+of the [weather-information-collector](https://gitlab.com/striezel/weather-information-collector/),
+just that it does not need more than the database-related settings. Such a file
+could have the following contents:
+
+    db.host=localhost
+    db.name=weather_information_collector
+    db.user=db_user_name
+    db.password=super-secret-password!
+    db.port=3306
+
+### Deployment
+
+Place the content of the directory `webinterface/` anywhere inside the document
+root of your webserver. It is usually located in `/var/www/html/` or a similar
+directory. Just make sure you keep the directory structure.
+
+The webinterface can then be accessed via
+<http://your.server.domain/path/to/index.php>.
+
+## Note
 
 You do of course need a MySQL database server that can be accessed by the
 webinterface, and the database should have been populated with some data by the
