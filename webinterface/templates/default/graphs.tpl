@@ -4,6 +4,8 @@
   var dates = {{>dates}};
   var temperature = {{>temperature}};
   var humidity = {{>humidity}};
+  var rain = {{>rain}};
+  var snow = {{>snow}};
 
   traces.push({
       x: dates,
@@ -25,6 +27,24 @@
       line: {
           color: 'rgb(0, 0, 255)'
       }
+  });
+  traces.push({
+      x: dates,
+      y: rain,
+      type: 'bar',
+      yaxis: 'y3',
+      name: 'Rain [mm/m²]',
+      connectgaps: false,
+      marker: {color: 'rgb(128, 128, 255)'}
+  });
+  traces.push({
+      x: dates,
+      y: snow,
+      type: 'bar',
+      yaxis: 'y3',
+      name: 'Snow [mm/m²]',
+      connectgaps: false,
+      marker: {color: 'rgb(128, 128, 128)'}
   });
 
   var layout = {
@@ -39,8 +59,20 @@
           titlefont: {color: 'rgb(0, 0, 255)'},
           tickfont: {color: 'rgb(0, 0, 255)'},
           overlaying: 'y',
+          anchor: 'x',
           side: 'right'
-      }
+      },
+      yaxis3: {
+          title: 'Precipitation [mm/m²]',
+          titlefont: {color: 'rgb(128, 128, 255)'},
+          tickfont: {color: 'rgb(128, 128, 255)'},
+          overlaying: 'y',
+          side: 'right',
+          anchor: 'free',
+          position: 0.9
+      },
+      xaxis: {domain: [0.1, 0.8]},
+      barmode: 'stack'
   };
 
   Plotly.newPlot('simplegraph', traces, layout, {
@@ -55,6 +87,8 @@
   var dates = {{>dates}};
   var temperature = {{>temperature}};
   var humidity = {{>humidity}};
+  var rain = {{>rain}};
+  var snow = {{>snow}};
 
   traces.push({
       x: dates,
@@ -76,6 +110,24 @@
       line: {
           color: 'rgb(0, 0, 255)'
       }
+  });
+  traces.push({
+      x: dates,
+      y: rain,
+      type: 'bar',
+      yaxis: 'y3',
+      name: 'Rain [mm/m²]',
+      connectgaps: false,
+      marker: {color: 'rgb(128, 128, 255)'}
+  });
+  traces.push({
+      x: dates,
+      y: snow,
+      type: 'bar',
+      yaxis: 'y3',
+      name: 'Snow [mm/m²]',
+      connectgaps: false,
+      marker: {color: 'rgb(128, 128, 128)'}
   });
 
   var selectorOptions = {
@@ -114,8 +166,20 @@
           titlefont: {color: 'rgb(0, 0, 255)'},
           tickfont: {color: 'rgb(0, 0, 255)'},
           overlaying: 'y',
+          anchor: 'x',
           side: 'right'
-      }
+      },
+      yaxis3: {
+          title: 'Precipitation [mm/m²]',
+          titlefont: {color: 'rgb(128, 128, 255)'},
+          tickfont: {color: 'rgb(128, 128, 255)'},
+          overlaying: 'y',
+          side: 'right',
+          anchor: 'free',
+          position: 0.9
+      },
+      xaxis: {domain: [0.1, 0.8]},
+      barmode: 'stack'
   };
 
   Plotly.newPlot('rangegraph', traces, layout, {
@@ -130,6 +194,8 @@
   var dates = {{>dates}};
   var temperature = {{>temperature}};
   var humidity = {{>humidity}};
+  var rain = {{>rain}};
+  var snow = {{>snow}};
 
   traces.push({
       x: dates,
@@ -154,6 +220,24 @@
           dash: 'dashdot'
       }
   });
+  traces.push({
+      x: dates,
+      y: rain,
+      type: 'bar',
+      yaxis: 'y3',
+      name: 'Rain [mm/m²]',
+      connectgaps: false,
+      marker: {color: 'rgb(128, 128, 255)'}
+  });
+  traces.push({
+      x: dates,
+      y: snow,
+      type: 'bar',
+      yaxis: 'y3',
+      name: 'Snow [mm/m²]',
+      connectgaps: false,
+      marker: {color: 'rgb(128, 128, 128)'}
+  });
 
   var layout = {
       title: '{{title}}' || 'Weather forecast data',
@@ -167,8 +251,20 @@
           titlefont: {color: 'rgb(0, 0, 255)'},
           tickfont: {color: 'rgb(0, 0, 255)'},
           overlaying: 'y',
+          anchor: 'x',
           side: 'right'
-      }
+      },
+      yaxis3: {
+          title: 'Precipitation [mm/m²]',
+          titlefont: {color: 'rgb(128, 128, 255)'},
+          tickfont: {color: 'rgb(128, 128, 255)'},
+          overlaying: 'y',
+          side: 'right',
+          anchor: 'free',
+          position: 0.9
+      },
+      xaxis: {domain: [0.1, 0.8]},
+      barmode: 'stack'
   };
 
   Plotly.newPlot('forecastgraph', traces, layout, {

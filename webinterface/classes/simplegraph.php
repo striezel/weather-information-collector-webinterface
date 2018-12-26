@@ -41,6 +41,8 @@ class simplegraph
     $dates = array();
     $temperature = array();
     $humidity = array();
+    $rain = array();
+    $snow = array();
     $prevTimeStamp = intval($data[0]['dt_ts']);
     foreach ($data as $key => $value)
     {
@@ -56,11 +58,15 @@ class simplegraph
         $dates[] = strftime('%Y-%m-%d %H:%M:%S', $interTime);
         $temperature[] = null;
         $humidity[] = null;
+        $rain[] = null;
+        $snow[] = null;
       }
       $prevTimeStamp = intval($value['dt_ts']);
       $dates[] = $value['dataTime'];
       $temperature[] = $value['temperature_C'];
       $humidity[] = $value['humidity'];
+      $rain[] = $value['rain'];
+      $snow[] = $value['snow'];
     }
 
     $tpl = new template();
@@ -77,6 +83,8 @@ class simplegraph
     $tpl->integrate('dates', json_encode($dates));
     $tpl->integrate('temperature', json_encode($temperature));
     $tpl->integrate('humidity', json_encode($humidity));
+    $tpl->integrate('rain', json_encode($rain));
+    $tpl->integrate('snow', json_encode($snow));
     return $tpl->generate();
   }
 }

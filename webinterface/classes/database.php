@@ -273,7 +273,7 @@ class database
       return array();
     $hours = intval($hours);
     $data = array();
-    $sql = 'SELECT DISTINCT dataTime, UNIX_TIMESTAMP(dataTime) AS dt_ts, temperature_C, temperature_F, temperature_K, humidity, rain, pressure FROM weatherdata'
+    $sql = 'SELECT DISTINCT dataTime, UNIX_TIMESTAMP(dataTime) AS dt_ts, temperature_C, temperature_F, temperature_K, humidity, rain, snow, pressure FROM weatherdata'
          . " WHERE locationID = '" . $locationId . "' AND apiID = '". $apiId ."'";
     // Limit range only for hours greater than zero.
     if ($hours >= 1)
@@ -319,7 +319,7 @@ class database
     $requestTime = $row['requestTime'];
 
     $data = array();
-    $sql = 'SELECT dataTime, UNIX_TIMESTAMP(dataTime) AS dt_ts, temperature_C, temperature_F, temperature_K, humidity, rain, pressure FROM forecastdata'
+    $sql = 'SELECT dataTime, UNIX_TIMESTAMP(dataTime) AS dt_ts, temperature_C, temperature_F, temperature_K, humidity, rain, snow, pressure FROM forecastdata'
          . " WHERE forecastID = '" . $forecastId . "' ORDER BY dataTime ASC;";
     $stmt = $this->pdo->query($sql);
     while (false !== ($row = $stmt->fetch(PDO::FETCH_ASSOC)))
