@@ -1,12 +1,35 @@
-# Use the official Debian 9 image.
+# Use the official Debian images.
 # See https://hub.docker.com/_/debian/ for more info.
-image: debian:stretch-slim
 
-build:
+# Debian 11 has PHP 7.4.
+php_7_4:
+  image: debian:11-slim
   stage: build
-  before_script: 
+  before_script:
     - apt-get update && apt-get -y install phpunit
-  script: 
+  script:
+    - ./ci/phplint.sh
+    - cd ./tests
+    - ./test.sh
+
+# Debian 10 has PHP 7.3.
+php_7_3:
+  image: debian:10-slim
+  stage: build
+  before_script:
+    - apt-get update && apt-get -y install phpunit
+  script:
+    - ./ci/phplint.sh
+    - cd ./tests
+    - ./test.sh
+
+# Debian 9 has PHP 7.0.
+php_7_0:
+  image: debian:9-slim
+  stage: build
+  before_script:
+    - apt-get update && apt-get -y install phpunit
+  script:
     - ./ci/phplint.sh
     - cd ./tests
     - ./test.sh
