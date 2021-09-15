@@ -1,0 +1,38 @@
+name: GitHub CI
+
+on: push
+
+jobs:
+  php_8_0:
+    runs-on: ubuntu-18.04
+    steps:
+      # Checks-out the repository under $GITHUB_WORKSPACE.
+      - uses: actions/checkout@v2
+      - name: Install Debian packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y phpunit
+      - name: Tests
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          ./ci/phplint.sh
+          cd ./tests
+          ./test.sh
+
+  php_5_6:
+    runs-on: ubuntu-18.04
+    steps:
+      # Checks-out the repository under $GITHUB_WORKSPACE.
+      - uses: actions/checkout@v2
+      - name: Setup PHP with specific version of PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '5.6'
+          extensions: pdo, pdo_mysql
+          tools: phpunit:5.7.27
+      - name: Tests
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          ./ci/phplint.sh
+          cd ./tests
+          ./test.sh
