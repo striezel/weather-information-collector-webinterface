@@ -2,7 +2,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the weather information collector webinterface.
-    Copyright (C) 2018  Dirk Stolle
+    Copyright (C) 2018, 2022  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ class templatehelper
     }
 
     $tpl->loadSection('header');
-    $tpl->tag('twbs_path', './libs/twbs/3.3.7');
+    $tpl->tag('twbs_path', './libs/twbs/3.4.1');
     $tpl->tag('jquery_path', './libs/jquery');
     $tpl->tag('title', $title);
     $tpl->integrate('scripts', $scriptInc);
