@@ -1,6 +1,17 @@
 # Use the official Debian images.
 # See https://hub.docker.com/_/debian/ for more info.
 
+# Debian 12 ("bookworm") has PHP 8.1.
+php_8_1:
+  image: debian:bookworm-slim
+  stage: build
+  before_script:
+    - apt-get update && apt-get -y install phpunit
+  script:
+    - ./ci/phplint.sh
+    - cd ./tests
+    - ./test.sh
+
 # Debian 11 has PHP 7.4.
 php_7_4:
   image: debian:11-slim
