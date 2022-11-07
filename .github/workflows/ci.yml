@@ -4,14 +4,16 @@ on: push
 
 jobs:
   php_8_0:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       # Checks-out the repository under $GITHUB_WORKSPACE.
       - uses: actions/checkout@v3
-      - name: Install Debian packages
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y phpunit
+      - name: Setup PHP with specific version of PECL extension
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.0'
+          extensions: pdo, pdo_mysql
+          tools: phpunit:9.5.10
       - name: Tests
         run: |
           cd "$GITHUB_WORKSPACE"
@@ -20,7 +22,7 @@ jobs:
           ./test.sh
 
   php_5_6:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-22.04
     steps:
       # Checks-out the repository under $GITHUB_WORKSPACE.
       - uses: actions/checkout@v3
