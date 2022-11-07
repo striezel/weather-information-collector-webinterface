@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the weather information collector webinterface.
-    Copyright (C) 2018  Dirk Stolle
+    Copyright (C) 2018, 2022  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,5 +25,5 @@ package io.github.striezel.weather_information_collector.webinterface.data;
  * @author Dirk Stolle
  */
 public enum RestApi {
-    Apixu, DarkSky, OpenWeatherMap
+    Apixu, DarkSky, OpenMeteo, OpenWeatherMap, Weatherbit, Weatherstack
 }

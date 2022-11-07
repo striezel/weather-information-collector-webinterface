@@ -1,7 +1,7 @@
 /*
  -------------------------------------------------------------------------------
     This file is part of the weather information collector webinterface.
-    Copyright (C) 2017, 2018  Dirk Stolle
+    Copyright (C) 2017, 2018, 2022  Dirk Stolle
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -205,8 +205,17 @@ public class SourceMySQL {
                     case "darksky":
                         apis.put(RestApi.DarkSky, res.getInt("apiID"));
                         break;
+                    case "openmeteo":
+                        apis.put(RestApi.OpenMeteo, res.getInt("apiID"));
+                        break;
                     case "openweathermap":
                         apis.put(RestApi.OpenWeatherMap, res.getInt("apiID"));
+                        break;
+                    case "weatherbit":
+                        apis.put(RestApi.Weatherbit, res.getInt("apiID"));
+                        break;
+                    case "weatherstack":
+                        apis.put(RestApi.Weatherstack, res.getInt("apiID"));
                         break;
                     default:
                         LOG.log(Level.WARNING, "Could not find suitable API enumeration value for {0} - going to ignore it!", name);
