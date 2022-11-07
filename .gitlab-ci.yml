@@ -6,7 +6,7 @@ image: openjdk:8
 build:
   stage: build
   before_script: 
-    - apt-get update && apt-get -y install maven libmysql-java
+    - apt-get update && apt-get -y install maven
   script: 
     - cd ./webinterface
     - mvn test
