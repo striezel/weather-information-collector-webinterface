@@ -3,7 +3,7 @@
 
 # Debian 12 ("bookworm") has PHP 8.1.
 php_8_1:
-  image: debian:bookworm-slim
+  image: debian:12-slim
   stage: build
   before_script:
     - apt-get update && apt-get -y install phpunit
