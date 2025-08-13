@@ -7,7 +7,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       # Checks-out the repository under $GITHUB_WORKSPACE.
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Setup PHP with specific version of PECL extension
         uses: shivammathur/setup-php@v2
         with:
@@ -25,7 +28,10 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       # Checks-out the repository under $GITHUB_WORKSPACE.
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
       - name: Setup PHP with specific version of PECL extension
         uses: shivammathur/setup-php@v2
         with:
