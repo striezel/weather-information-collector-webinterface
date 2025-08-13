@@ -1,6 +1,17 @@
 # Use the official Debian images.
 # See https://hub.docker.com/_/debian/ for more info.
 
+# Debian 13 ("trixie") has PHP 8.4.
+php_8_4:
+  image: debian:13-slim
+  stage: build
+  before_script:
+    - apt-get update && apt-get -y install phpunit
+  script:
+    - ./ci/phplint.sh
+    - cd ./tests
+    - ./test.sh
+
 # Debian 12 ("bookworm") has PHP 8.1.
 php_8_1:
   image: debian:12-slim
@@ -28,17 +39,7 @@ php_7_3:
   image: debian:10-slim
   stage: build
   before_script:
-    - apt-get update && apt-get -y install phpunit
-  script:
-    - ./ci/phplint.sh
-    - cd ./tests
-    - ./test.sh
-
-# Debian 9 has PHP 7.0.
-php_7_0:
-  image: debian:9-slim
-  stage: build
-  before_script:
+    - sed -i 's~http://deb.debian.org/~http://archive.debian.org/~g' /etc/apt/sources.list
     - apt-get update && apt-get -y install phpunit
   script:
     - ./ci/phplint.sh
